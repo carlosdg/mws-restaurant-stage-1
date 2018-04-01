@@ -19,27 +19,38 @@
   </header>
 
   <main id="maincontent">
+    <!-- Map section -->
     <section id="map-container">
       <div id="map"></div>
     </section>
+
+    <!-- Filters section -->
     <section>
       <div class="filter-options">
-        <h2>Filter Results</h2>
-        <select id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()">
-          <option value="all">All Neighborhoods</option>
-        </select>
-        <select id="cuisines-select" name="cuisines" onchange="updateRestaurants()">
-          <option value="all">All Cuisines</option>
-        </select>
+        <!-- Heading -->
+        <h2>Filters</h2>
+        <!-- First filter, by neighborhood -->
+        <div class="filter">
+          <label for="neighborhoods-select">Filter by neighborhoods:</label>
+          <select id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()">
+            <option value="all">All Neighborhoods</option>
+          </select>
+        </div>
+        <!-- Second filter, by cuisine -->
+        <div class="filter">
+          <label for="cuisines-select">Filter by cuisines:</label>
+          <select id="cuisines-select" name="cuisines" onchange="updateRestaurants()">
+            <option value="all">All Cuisines</option>
+          </select>
+        </div>
       </div>
+    </section>
+
+    <!-- Results section -->
+    <section>
       <ul id="restaurants-list"></ul>
     </section>
   </main>
-
-  <script type="application/javascript" charset="utf-8" src="js/dbhelper.js"></script>
-  <script type="application/javascript" charset="utf-8" src="js/main.js"></script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2VvEnQowBmkRztqts5kPVTYdtN-62eJs&libraries=places&callback=initMap"></script>
-
 
   <footer id="footer">
     Copyright © 2017
@@ -49,6 +60,9 @@
     All Rights Reserved.
   </footer>
 
+  <script type="application/javascript" charset="utf-8" src="js/dbhelper.js"></script>
+  <script type="application/javascript" charset="utf-8" src="js/main.js"></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2VvEnQowBmkRztqts5kPVTYdtN-62eJs&libraries=places&callback=initMap"></script>
 </body>
 
 </html>

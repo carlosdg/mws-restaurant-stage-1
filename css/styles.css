@@ -10,10 +10,9 @@
   --dark-black: #333;
   --light-black: #444;
   --dark-white: #ccc;
-  --light-white: #fff;
-  --orange: orange;
-  --light-blue: #3397db;
-  --dark-blue: blue;
+  --light-white: #eee;
+  --light-blue: #6abed2;
+  --dark-blue: #3397db;
 }
 body,
 td,
@@ -31,21 +30,23 @@ body {
 ul,
 li {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 10pt;
   color: var(--dark-black);
 }
 a {
-  color: var(--orange);
+  color: var(--light-blue);
   text-decoration: none;
 }
-a:focus {
+a:focus,
+select:focus {
   outline: none;
+}
+select:focus {
+  box-shadow: 0 7px 9px -3px var(--dark-blue);
 }
 a:hover,
 a:focus {
-  color: var(--light-blue);
-  border: 1px solid var(--light-blue);
-  border-width: 0 0 1px 0;
+  color: var(--dark-blue);
+  box-shadow: 0 7px 9px -5px var(--dark-blue);
 }
 a img {
   border: none 0px var(--light-white);
@@ -82,9 +83,9 @@ section {
 #footer {
   background-color: var(--light-black);
   color: var(--dark-white);
-  font-size: 8pt;
+  font-size: 0.8rem;
   letter-spacing: 1px;
-  padding: 25px;
+  padding: 1.6rem;
   text-align: center;
   text-transform: uppercase;
 }
@@ -97,10 +98,11 @@ nav {
   align-items: center;
   text-align: center;
   min-height: 4.5rem;
-  background-color: var(--dark-black);
+  background-color: var(--light-black);
 }
 nav h1 {
   margin: 0; /* Because h1 have margin bottom by default that doesn't look good here */
+  padding: 1rem;
 }
 nav h1 a {
   color: var(--light-white);
@@ -132,35 +134,38 @@ nav h1 a {
 
 /* ====================== Map ====================== */
 #map {
-  height: 400px;
-  width: 100%;
+  min-height: 400px;
   background-color: var(--dark-white);
 }
 
 /* ====================== Restaurant Filtering ====================== */
 .filter-options {
-  width: 100%;
-  height: 50px;
-  background-color: var(--light-blue);
+  display: flex;
   align-items: center;
+  justify-content: center;
+  flex-wrap: wrap; /* If viewport width is too small the elements will wrap and look good on small widths */
+  background-color: var(--light-black);
+  color: var(--light-white);
+  padding: 1rem;
 }
 .filter-options h2 {
-  color: var(--light-white);
-  font-size: 1rem;
+  flex: 0 1 100%; /* This way the title is always in its own row */
+  text-align: center;
   font-weight: normal;
-  line-height: 1;
-  margin: 0 20px;
 }
-.filter-options select {
-  background-color: var(--light-white);
-  border: 1px solid var(--light-white);
-  font-family: Arial, sans-serif;
-  font-size: 11pt;
-  height: 35px;
-  letter-spacing: 0;
-  margin: 10px;
-  padding: 0 10px;
-  width: 200px;
+.filter {
+  flex: 0 1 50%; /* To have the two filters separated evenly */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.filter select {
+  background-color: var(--dark-white);
+  font-size: inherit;
+  height: 2.5rem; /* Because padding doesn't work, this is so users have enough space to touch/click */
+  min-width: 200px;
+  margin: 1rem;
 }
 
 /* ====================== Restaurant Listing ====================== */
@@ -190,7 +195,7 @@ nav h1 a {
   min-width: 100%;
 }
 #restaurants-list li h1 {
-  color: var(--orange);
+  color: var(--dark-blue);
   font-family: Arial, sans-serif;
   font-size: 14pt;
   font-weight: 200;
@@ -204,7 +209,7 @@ nav h1 a {
   font-size: 11pt;
 }
 #restaurants-list li a {
-  background-color: var(--orange);
+  background-color: var(--dark-blue);
   border-bottom: 3px solid var(--light-white);
   color: var(--light-white);
   display: inline-block;
@@ -242,7 +247,7 @@ nav h1 a {
   width: 50%;
 }
 #restaurant-name {
-  color: var(--orange);
+  color: var(--dark-blue);
   font-family: Arial, sans-serif;
   font-size: 20pt;
   font-weight: 200;
@@ -281,7 +286,7 @@ nav h1 a {
   padding: 30px 40px 80px;
 }
 #reviews-container h2 {
-  color: var(--orange);
+  color: var(--dark-blue);
   font-size: 24pt;
   font-weight: 300;
   letter-spacing: -1px;
