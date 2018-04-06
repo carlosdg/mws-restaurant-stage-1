@@ -36,17 +36,18 @@ select {
 }
 a {
   text-decoration: none;
-  border-radius: 3px;
   transition: 0.2s all ease-in; /* To animate hover and focus effects */
   color: var(--light-white);
-  box-shadow: 0 7px 6px -5px var(--dark-white);
+  box-shadow: 0 1px 0 0 var(--dark-white); /* This instead of border because this can be animated */
 }
 select:focus {
   box-shadow: 0 2px 9px 3px var(--dark-white);
 }
 a:hover,
 a:focus {
-  font-size: 1.1em;
+  /* font-size: 1.05em; */
+  box-shadow: 0 1px 0 0 var(--dark-white), 0 -1px 0 0 var(--dark-white),
+    1px 0 0 0 var(--dark-white), -1px 0 0 0 var(--dark-white);
 }
 a img {
   border: none 0px var(--light-white);
@@ -111,12 +112,10 @@ nav h1 a {
 }
 
 #breadcrumb {
-  padding: 10px 40px 16px;
+  padding: 1rem;
   list-style: none;
   background-color: var(--light-white);
-  font-size: 17px;
   margin: 0;
-  width: calc(50% - 80px);
 }
 
 /* Display list items side by side */
@@ -126,14 +125,24 @@ nav h1 a {
 
 /* Add a slash symbol (/) before/behind each list item */
 #breadcrumb li + li:before {
-  padding: 8px;
+  padding: 0.5rem;
   color: var(--dark-black);
   content: '/\00a0';
 }
 
+#breadcrumb li a {
+  color: var(--dark-black);
+  box-shadow: 0 1px 0 0 var(--dark-black);
+}
+#breadcrumb li a:hover,
+#breadcrumb li a:focus {
+  box-shadow: 0 1px 0 0 var(--dark-black), 0 -1px 0 0 var(--dark-black),
+    1px 0 0 0 var(--dark-black), -1px 0 0 0 var(--dark-black);
+}
+
 /* ====================== Map ====================== */
 #map {
-  min-height: 400px;
+  min-height: 65vh;
   background-color: var(--dark-white);
 }
 
@@ -151,6 +160,7 @@ nav h1 a {
   flex: 0 1 100%; /* This way the title is always in its own row */
   text-align: center;
   font-weight: normal;
+  margin: 0 0 0.5rem 0;
 }
 .filter {
   flex: 0 1 50%; /* To have the two filters separated evenly */
@@ -226,7 +236,7 @@ nav h1 a {
 }
 
 /* ====================== Restaurant Details ====================== */
-.inside header {
+.sticky-header {
   position: fixed;
   top: 0;
   width: 100%;

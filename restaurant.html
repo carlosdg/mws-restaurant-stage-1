@@ -71,8 +71,34 @@
   <script type="text/javascript" src="js/restaurant_info.js"></script>
   <!-- Google Maps -->
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC2VvEnQowBmkRztqts5kPVTYdtN-62eJs&libraries=places&callback=initMap"></script>
-  <!-- End scripts -->
 
+  <!-- Script for sticky breadcrumb -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Get the breadcrumb and the initial top position
+      var stickyBreadcrumb = document.getElementById('breadcrumb');
+      var breadcrumbInitialTopPosition = stickyBreadcrumb.offsetTop;
+
+      // Add a scroll event listener
+      window.addEventListener('scroll', function () {
+        requestAnimationFrame(updateBreadcrumbPosition);  // Tell the browser to update when it is ready
+      });
+
+      // Update logic
+      function updateBreadcrumbPosition() {
+        // If the current scroll position is passed the breadcrumb top position -> make it sticky
+        if (window.scrollY >= breadcrumbInitialTopPosition) {
+          stickyBreadcrumb.classList.add('sticky-header');
+          document.body.setAttribute('style', 'padding-top: ' + stickyBreadcrumb.offsetHeight + 'px');
+        }
+        else {
+          stickyBreadcrumb.classList.remove('sticky-header');
+          document.body.setAttribute('style', 'padding-top: 0px');
+        }
+      }
+    });
+  </script>
+  <!-- End scripts -->
 </body>
 
 </html>
