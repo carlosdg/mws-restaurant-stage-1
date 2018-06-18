@@ -4,6 +4,15 @@
 * {
   box-sizing: border-box;
 }
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+img {
+  /* Not letting the images be wider than the parent width by default  */
+  max-width: 100%;
+}
 .container {
   max-width: 1024px;
   padding: 2rem;
@@ -12,6 +21,8 @@
 
 /* Styles for the div where the map will be */
 #map {
-  min-height: 400px;
+  min-height: 300px;
   background-color: #ccc;
 }
+
+/* Styles for the restaurant preview cards */
