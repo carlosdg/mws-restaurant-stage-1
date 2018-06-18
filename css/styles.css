@@ -26,3 +26,12 @@ img {
 }
 
 /* Styles for the restaurant preview cards */
+.restaurant-info-preview {
+  max-width: 300px;
+  margin: 2rem auto;
+  padding: 1rem;
+
+  /* Having it look like a card */
+  border-radius: 5px;
+  box-shadow: -3px 4px 10px 2px #ddd, 1px -1px 10px 0 #ddd;
+}
