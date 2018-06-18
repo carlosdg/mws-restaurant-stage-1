@@ -4,8 +4,10 @@
 * {
   box-sizing: border-box;
 }
-html {
+body {
   font-size: 18px;
+  padding: 0;
+  margin: 0;
 }
 select {
   font-size: inherit;
@@ -26,8 +28,30 @@ img {
 }
 .container {
   max-width: 1024px;
-  padding: 2rem;
+  padding: 1rem;
   margin: auto;
+}
+
+/* Styles for the header */
+header {
+  background-image: linear-gradient(
+    to bottom,
+    rgba(217, 217, 217, 0.5) 0%,
+    rgba(217, 217, 217, 0) 100%
+  );
+}
+header h1 {
+  text-align: center;
+}
+
+/* Styles for the footer */
+footer {
+  background-image: linear-gradient(
+    to top,
+    rgba(217, 217, 217, 0.5) 0%,
+    rgba(217, 217, 217, 0) 100%
+  );
+  text-align: center;
 }
 
 /* Styles for the div where the map will be */
