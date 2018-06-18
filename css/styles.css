@@ -30,13 +30,30 @@ img {
   background-color: #ccc;
 }
 
+/* Styles for links */
+.inline-link {
+  display: inline-block;
+  padding: 2px 0;
+  color: rgba(20, 20, 20, 1);
+  /* Transparent border top to animate it on hover and focus */
+  border-bottom: 2px solid rgba(20, 20, 20, 1);
+  border-top: 2px solid rgba(20, 20, 20, 0);
+  transition: all 0.3s linear;
+  /* Scale it down a little so we can rescale it to 1 on hover/focus */
+  transform: scaleX(0.95);
+}
+.inline-link:hover,
+.inline-link:focus {
+  border-top-color: rgba(20, 20, 20, 1);
+  transform: scaleX(1);
+}
+
 /* Styles for the restaurant preview cards */
 .restaurant-info-preview {
   max-width: 300px;
   margin: 2rem auto;
   padding: 1rem;
-
-  /* Having it look like a card */
+  /* Making it look like a card */
   border-radius: 5px;
   box-shadow: -3px 4px 10px 2px #ddd, 1px -1px 10px 0 #ddd;
 }
