@@ -94,6 +94,9 @@ footer {
   border-radius: 5px;
   box-shadow: -3px 4px 10px 2px #ddd, 1px -1px 10px 0 #ddd;
 }
+.restaurant-info-preview .restaurant-preview-name {
+  margin: 0 0 1rem 0;
+}
 .restaurant-info-preview .restaurant-preview-details-link {
   display: block;
   padding: 0.5rem;
