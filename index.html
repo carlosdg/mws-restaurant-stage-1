@@ -24,20 +24,22 @@
     <section id="map-container" class="container">
       <div id="map"></div>
     </section>
-    <section class="filter-options container">
+    <section class="container">
       <h2>Filters</h2>
-      <p class="filter-group">
-        <label for="neighborhoods-select" class="filter-label">Filter by neighborhood: </label>
-        <select id="neighborhoods-select" class="filter" name="neighborhoods" onchange="updateRestaurants()">
-          <option value="all">All Neighborhoods</option>
-        </select>
-      </p>
-      <p class="filter-group">
-        <label for="cuisines-select" class="filter-label">Filter by cuisine: </label>
-        <select id="cuisines-select" class="filter" name="cuisines" onchange="updateRestaurants()">
-          <option value="all">All Cuisines</option>
-        </select>
-      </p>
+      <div class="filter-options">
+        <p class="filter-group">
+          <label for="neighborhoods-select" class="filter-label">Filter by neighborhood: </label>
+          <select id="neighborhoods-select" class="filter" name="neighborhoods" onchange="updateRestaurants()">
+            <option value="all">All Neighborhoods</option>
+          </select>
+        </p>
+        <p class="filter-group">
+          <label for="cuisines-select" class="filter-label">Filter by cuisine: </label>
+          <select id="cuisines-select" class="filter" name="cuisines" onchange="updateRestaurants()">
+            <option value="all">All Cuisines</option>
+          </select>
+        </p>
+      </div>
     </section>
     <section class="filter-results container">
       <h2>Restaurants</h2>

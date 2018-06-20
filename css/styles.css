@@ -4,13 +4,15 @@
 * {
   box-sizing: border-box;
 }
+html {
+  font-size: 24px;
+}
 body {
-  font-size: 18px;
   padding: 0;
   margin: 0;
 }
 select {
-  font-size: inherit;
+  font: inherit;
 }
 ul {
   list-style-type: none;
@@ -26,10 +28,35 @@ img {
   max-width: 100%;
   border-radius: 5px;
 }
+
+/* Styles for the container and grid */
 .container {
   max-width: 1024px;
   padding: 1rem;
   margin: auto;
+}
+.flex-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+/* Styles for links */
+.inline-link {
+  display: inline-block;
+  padding: 2px 0;
+  color: rgba(20, 20, 20, 1);
+  /* Transparent border top to animate it on hover and focus */
+  border-bottom: 2px solid rgba(20, 20, 20, 1);
+  border-top: 2px solid rgba(20, 20, 20, 0);
+  transition: all 0.3s linear;
+  /* Scale it down a little so we can rescale it to 1 on hover/focus */
+  transform: scaleX(0.95);
+}
+.inline-link:hover,
+.inline-link:focus {
+  border-top-color: rgba(20, 20, 20, 1);
+  transform: scaleX(1);
 }
 
 /* Styles for the header */
@@ -60,22 +87,35 @@ footer {
   background-color: #ccc;
 }
 
-/* Styles for links */
-.inline-link {
-  display: inline-block;
-  padding: 2px 0;
-  color: rgba(20, 20, 20, 1);
-  /* Transparent border top to animate it on hover and focus */
-  border-bottom: 2px solid rgba(20, 20, 20, 1);
-  border-top: 2px solid rgba(20, 20, 20, 0);
-  transition: all 0.3s linear;
-  /* Scale it down a little so we can rescale it to 1 on hover/focus */
-  transform: scaleX(0.95);
+/* Styles for the filters */
+.filter-options,
+.filter-group {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: column;
 }
-.inline-link:hover,
-.inline-link:focus {
-  border-top-color: rgba(20, 20, 20, 1);
-  transform: scaleX(1);
+.filter-group {
+  text-align: center;
+  margin: 0.5rem auto;
+}
+.filter-label {
+  margin: 0.5rem;
+}
+.filter {
+}
+@media screen and (min-width: 550px) {
+  .filter-group {
+    flex-direction: row;
+  }
+}
+@media screen and (min-width: 750px) {
+  .filter-options {
+    flex-direction: row;
+    justify-content: space-around;
+  }
+  .filter-group {
+    flex-direction: column;
+  }
 }
 
 /* Styles for the restaurant preview cards */
@@ -110,10 +150,4 @@ footer {
 .restaurant-info-preview .restaurant-preview-details-link:focus {
   opacity: 0.8;
   box-shadow: 0px 9px 5px -7px #333;
-}
-
-.flex-grid {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-around;
 }
