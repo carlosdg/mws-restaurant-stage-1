@@ -20,7 +20,7 @@
     </h1>
   </header>
 
-  <nav>
+  <nav class="breadcrumb-nav">
     <ul id="breadcrumb" class="container">
       <li>
         <a href="/" class="inline-link">Home</a>
@@ -60,6 +60,23 @@
   <script type="text/javascript" src="js/dbhelper.js"></script>
   <!-- Main javascript file -->
   <script type="text/javascript" src="js/restaurant_info.js"></script>
+  <!-- Script for sticky breadcrumb -->
+  <script>
+    const nav = document.querySelector('.breadcrumb-nav');
+    const topOfNav = nav.offsetTop;
+
+    function fixNav() {
+      if (window.scrollY >= topOfNav) {
+        document.body.style.paddingTop = nav.offsetHeight + 'px';
+        nav.classList.add('fixed-nav');
+      } else {
+        nav.classList.remove('fixed-nav');
+        document.body.style.paddingTop = 0;
+      }
+    }
+
+    window.addEventListener('scroll', fixNav);
+  </script>
 </body>
 
 </html>
