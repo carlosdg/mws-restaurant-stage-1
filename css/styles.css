@@ -103,8 +103,6 @@ footer {
 .filter-label {
   margin: 0.5rem;
 }
-.filter {
-}
 @media screen and (min-width: 550px) {
   .filter-group {
     flex-direction: row;
@@ -171,4 +169,66 @@ footer {
 }
 .breadcrumb-nav > ul > li:not(:first-child)::before {
   content: ' / ';
+}
+
+/* Styles for the restaurant info cards */
+#restaurant-container > div {
+  /* Making it look like a card */
+  border-radius: 5px;
+  box-shadow: -3px 4px 10px 2px #ddd, 1px -1px 10px 0 #ddd;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 1rem 0.1rem;
+  padding: 1rem;
+}
+#restaurant-container > img {
+  box-shadow: -3px 4px 10px 2px #ddd, 1px -1px 10px 0 #ddd;
+}
+#restaurant-container > div > h3 {
+  margin: 0;
+}
+
+/* Styles for the restaurant schedule */
+#restaurant-hours {
+  display: block;
+  max-height: 250px;
+  overflow-y: hidden;
+}
+#restaurant-hours > tr {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 1rem auto;
+}
+#restaurant-hours > tr > td {
+  flex: 1 1 100%;
+  text-align: center;
+}
+.toggle-schedule {
+  background: inherit;
+  border: inherit;
+
+  /* Transparent border bottom to animate it on hover and focus */
+  border-top: 2px solid rgba(20, 20, 20);
+  border-bottom: 2px solid rgba(20, 20, 20, 0);
+  font-size: 0.8rem;
+  color: rgba(20, 20, 20);
+  /* Scale it down a little so we can rescale it to 1 on hover/focus */
+  transform: scaleX(0.95);
+
+  display: inline-block;
+  text-align: center;
+  min-width: 100%;
+  padding: 5px 0;
+  margin: 1rem auto;
+
+  transition: all 0.3s linear;
+}
+.toggle-schedule:hover,
+.toggle-schedule:focus {
+  border-bottom-color: rgba(20, 20, 20, 1);
+  transform: scaleX(1);
 }
