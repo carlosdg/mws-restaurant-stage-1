@@ -34,19 +34,19 @@
       <div id="map"></div>
     </section>
     <section id="restaurant-container" class="container">
-      <h1 id="restaurant-name"></h1>
+      <h2 id="restaurant-name"></h2>
       <img id="restaurant-img">
-      <div>
+      <div class="cuisine-type-container">
         <h3>Cuisine type</h3>
         <p id="restaurant-cuisine"></p>
       </div>
-      <div>
+      <div class="address-container">
         <h3>Address</h3>
         <p id="restaurant-address"></p>
       </div>
-      <div>
+      <div class="schedule-container">
         <h3>Schedule</h3>
-        <table id="restaurant-hours"></table>
+        <table id="restaurant-hours" class="schedule-collapsed"></table>
         <!-- Hidden to screen readers because they will read the entire schedule -->
         <button id="toggle-schedule-button" class="toggle-schedule" title="Expand/Collapse the restaurant schedule" aria-hidden="true">See more</button>
       </div>
@@ -92,11 +92,13 @@
 
     function toggleScheduleExpand(event) {
       if (!isScheduleExpanded) {
-        schedule.style.maxHeight = 'none';
+        schedule.classList.remove('schedule-collapsed');
+        schedule.classList.add('schedule-expanded');
         toggleScheduleExpandButton.innerText = 'See less';
       }
       else {
-        schedule.style.maxHeight = '250px';
+        schedule.classList.add('schedule-collapsed');
+        schedule.classList.remove('schedule-expanded');
         toggleScheduleExpandButton.innerText = 'See more';
       }
       isScheduleExpanded = !isScheduleExpanded;

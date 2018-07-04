@@ -25,7 +25,7 @@ a {
 }
 img {
   /* Not letting the images be wider than the parent width by default  */
-  max-width: 100%;
+  width: 100%;
   border-radius: 5px;
 }
 
@@ -171,30 +171,16 @@ footer {
   content: ' / ';
 }
 
-/* Styles for the restaurant info cards */
-#restaurant-container > div {
-  /* Making it look like a card */
-  border-radius: 5px;
-  box-shadow: -3px 4px 10px 2px #ddd, 1px -1px 10px 0 #ddd;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin: 1rem 0.1rem;
-  padding: 1rem;
-}
-#restaurant-container > img {
-  box-shadow: -3px 4px 10px 2px #ddd, 1px -1px 10px 0 #ddd;
-}
-#restaurant-container > div > h3 {
-  margin: 0;
-}
-
 /* Styles for the restaurant schedule */
 #restaurant-hours {
   display: block;
-  max-height: 250px;
   overflow-y: hidden;
+}
+#restaurant-hours.schedule-expanded {
+  max-height: none;
+}
+#restaurant-hours.schedule-collapsed {
+  max-height: 250px;
 }
 #restaurant-hours > tr {
   display: flex;
@@ -231,4 +217,83 @@ footer {
 .toggle-schedule:focus {
   border-bottom-color: rgba(20, 20, 20, 1);
   transform: scaleX(1);
+}
+
+/* Styles for the restaurant info cards */
+#restaurant-container {
+  display: grid;
+  justify-items: stretch;
+  align-items: center;
+  grid-template-rows: auto;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    'header'
+    'img'
+    'type'
+    'address'
+    'schedule';
+}
+#restaurant-container > h2 {
+  grid-area: header;
+}
+#restaurant-container > img {
+  grid-area: img;
+  margin: auto;
+  box-shadow: -3px 4px 10px 2px #ddd, 1px -1px 10px 0 #ddd;
+}
+#restaurant-container > div {
+  /* Making them look like a card */
+  border-radius: 5px;
+  box-shadow: -3px 4px 10px 2px #ddd, 1px -1px 10px 0 #ddd;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 1rem 0.1rem;
+  padding: 1rem;
+}
+.cuisine-type-container {
+  grid-area: type;
+}
+.address-container {
+  grid-area: address;
+}
+.schedule-container {
+  grid-area: schedule;
+}
+#restaurant-container > div > h3 {
+  margin: 0;
+}
+
+@media screen and (min-width: 600px) {
+  #restaurant-container {
+    grid-template-columns: 1fr 1rem 1fr;
+    grid-template-areas:
+      'header header header'
+      'img img img'
+      'type . address'
+      'schedule schedule schedule';
+  }
+  #restaurant-container .schedule-container {
+  }
+}
+@media screen and (min-width: 700px) {
+  #restaurant-container {
+    grid-template-columns: 1fr 1rem 1fr;
+    grid-template-areas:
+      'header header header'
+      'img . schedule'
+      'type . schedule'
+      'address . schedule';
+  }
+  #restaurant-container .schedule-container {
+    margin-top: 0;
+  }
+  .schedule-container > #restaurant-hours.schedule-expanded,
+  .schedule-container > #restaurant-hours.schedule-collapsed {
+    max-height: none;
+  }
+  .schedule-container > .toggle-schedule {
+    display: none;
+  }
 }
