@@ -274,8 +274,6 @@ footer {
       'type . address'
       'schedule schedule schedule';
   }
-  #restaurant-container .schedule-container {
-  }
 }
 @media screen and (min-width: 700px) {
   #restaurant-container {
@@ -295,5 +293,45 @@ footer {
   }
   .schedule-container > .toggle-schedule {
     display: none;
+  }
+}
+
+/* Styles for the reviews */
+.review {
+  box-shadow: -3px 4px 10px 2px #ddd, 1px -1px 10px 0 #ddd;
+  border-radius: 5px;
+  padding: 1rem;
+  margin: 1rem auto;
+}
+.review > .review-comment {
+  font-size: 0.9rem;
+}
+
+@media screen and (min-width: 400px) {
+  .review > .review-comment {
+    font-size: 1rem;
+  }
+}
+
+@media screen and (min-width: 550px) {
+  .review {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .review > .review-date {
+    flex-grow: 1;
+    text-align: right;
+  }
+  .review .reviewer-name,
+  .review .review-comment {
+    flex: 1 0 100%;
+  }
+  .review .review-comment {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    padding: 1rem 0;
+  }
+  .review .reviewer-name {
+    order: 1;
   }
 }
