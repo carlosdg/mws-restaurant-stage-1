@@ -159,24 +159,28 @@ createRestaurantHTML = (restaurant) => {
 
   const name = document.createElement('h3');
   name.classList.add('restaurant-preview-name');
-  name.innerHTML = restaurant.name;
+  name.innerText = restaurant.name;
   li.append(name);
 
   const image = document.createElement('img');
   image.classList.add('restaurant-preview-img');
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  image.setAttribute('alt', '');
+  image.setAttribute('src', DBHelper.imageUrlForRestaurant(restaurant))
   li.append(image);
 
   const address = document.createElement('p');
   address.classList.add('restaurant-preview-address');
-  address.innerHTML = restaurant.address;
+  address.setAttribute('title', 'Restaurant address');
+  address.innerText = restaurant.address;
   li.append(address);
 
   const more = document.createElement('a');
+  const description = 'View details of the restaurant "' + restaurant.name + '"';
+  more.setAttribute('aria-label', description);
+  more.setAttribute('title', description);
+  more.setAttribute('href', DBHelper.urlForRestaurant(restaurant));
   more.classList.add('restaurant-preview-details-link');
-  more.innerHTML = 'View Details';
-  more.href = DBHelper.urlForRestaurant(restaurant);
-  more.setAttribute('aria-label', 'View details of the restaurant ' + restaurant.name);
+  more.innerText = 'View Details';
   li.append(more)
 
   return li

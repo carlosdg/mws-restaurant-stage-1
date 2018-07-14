@@ -81,17 +81,18 @@ fetchRestaurantFromURL = (callback) => {
  */
 fillRestaurantHTML = (restaurant = self.restaurant) => {
   const name = document.getElementById('restaurant-name');
-  name.innerHTML = restaurant.name;
+  name.innerText = restaurant.name;
 
   const address = document.getElementById('restaurant-address');
-  address.innerHTML = restaurant.address;
+  address.innerText = restaurant.address;
 
   const image = document.getElementById('restaurant-img');
-  image.className = 'restaurant-img'
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  image.className = 'restaurant-img';
+  image.setAttribute('alt', '');
+  image.setAttribute('src', DBHelper.imageUrlForRestaurant(restaurant))
 
   const cuisine = document.getElementById('restaurant-cuisine');
-  cuisine.innerHTML = restaurant.cuisine_type;
+  cuisine.innerText = restaurant.cuisine_type;
 
   // fill operating hours
   if (restaurant.operating_hours) {
@@ -154,7 +155,7 @@ createReviewHTML = (review) => {
   li.classList.add('review');
   
   const rating = document.createElement('p');
-  rating.innerHTML = `<strong>Rating:</strong> ${review.rating} / 5`;
+  rating.innerHTML = `<strong>Rating:</strong> ${review.rating}`;
   rating.classList.add('review-rating');
   li.appendChild(rating);
 

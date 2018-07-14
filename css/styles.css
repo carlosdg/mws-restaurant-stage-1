@@ -23,6 +23,9 @@ a {
   color: inherit;
   text-decoration: none;
 }
+#map a {
+  color: inherit;
+}
 img {
   /* Not letting the images be wider than the parent width by default  */
   width: 100%;
