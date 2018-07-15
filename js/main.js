@@ -165,7 +165,14 @@ createRestaurantHTML = (restaurant) => {
   const image = document.createElement('img');
   image.classList.add('restaurant-preview-img');
   image.setAttribute('alt', '');
-  image.setAttribute('src', DBHelper.imageUrlForRestaurant(restaurant))
+  image.setAttribute('src', restaurant.restaurantPhotoInfo[0].url);
+  image.setAttribute('srcset',
+    restaurant
+    .restaurantPhotoInfo
+    .map(({url, width}) => `${url} ${width}w`)
+    .join(', ')
+  );
+  image.setAttribute('sizes', '300px');
   li.append(image);
 
   const address = document.createElement('p');
