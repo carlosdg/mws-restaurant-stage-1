@@ -1,0 +1,23 @@
+{
+  "name": "mws-restaurant",
+  "version": "1.0.0",
+  "description": "Udacity Mobile Web Nanodegree Project",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/carlosdg/mws-restaurant-stage-1.git"
+  },
+  "author": "Carlos Domínguez García",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/carlosdg/mws-restaurant-stage-1/issues"
+  },
+  "homepage": "https://github.com/carlosdg/mws-restaurant-stage-1#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-imagemin": "^4.1.0"
+  }
+}
