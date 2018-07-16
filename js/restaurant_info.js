@@ -89,6 +89,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const image = document.getElementById('restaurant-img');
   image.className = 'restaurant-img';
   image.setAttribute('alt', '');
+  image.setAttribute('role', 'presentation');
   image.setAttribute('src', restaurant.restaurantPhotoInfo[0].url);
   image.setAttribute('srcset',
     restaurant

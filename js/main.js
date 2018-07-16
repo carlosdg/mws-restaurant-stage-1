@@ -164,6 +164,7 @@ createRestaurantHTML = (restaurant) => {
 
   const image = document.createElement('img');
   image.classList.add('restaurant-preview-img');
+  image.setAttribute('role', 'presentation');
   image.setAttribute('alt', '');
   image.setAttribute('src', restaurant.restaurantPhotoInfo[0].url);
   image.setAttribute('srcset',
