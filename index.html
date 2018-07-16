@@ -17,14 +17,17 @@
 <body>
   <header>
     <h1 class="container">
-      <a href="/" class="inline-link">Restaurant Reviews</a>
+      <a href="/" class="inline-link" title="Link to home">Restaurant Reviews</a>
     </h1>
   </header>
 
   <main id="maincontent">
-    <section id="map-container" class="container">
+    <!-- Map is for presentation, users have the address of the restaurants below -->
+    <section id="map-container" class="container" role="presentation" aria-hidden="true">
       <div id="map"></div>
     </section>
+
+    <!-- Filters section -->
     <section class="container">
       <h2>Filters</h2>
       <div class="filter-options">
@@ -42,6 +45,8 @@
         </p>
       </div>
     </section>
+
+    <!-- List of restaurant after applying the filters -->
     <section class="filter-results container">
       <h2>Restaurants</h2>
       <ul id="restaurants-list" class="flex-grid"></ul>
@@ -50,10 +55,9 @@
 
   <footer id="footer">
     <div class="container">
-      Copyright (c) 2017
-      <a href="/" class="inline-link">
-        <strong>Restaurant Reviews</strong>
-      </a> All Rights Reserved.
+      Copyright © 2017
+      <a href="/" class="inline-link">Restaurant Reviews</a>
+      All Rights Reserved.
     </div>
   </footer>
 
