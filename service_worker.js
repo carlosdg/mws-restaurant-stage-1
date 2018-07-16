@@ -1,6 +1,6 @@
-const cacheName = 'restaurant-reviews-v2';
+const cacheName = 'restaurant-reviews-v1';
 
-// Cache vital assets while waiting to install
+// Cache vital assets on install
 self.addEventListener('install', event => {
     event.waitUntil(caches
         .open(cacheName)
@@ -15,6 +15,18 @@ self.addEventListener('install', event => {
                 'js/restaurant_info.js'
             ])
         )
+    )
+})
+
+// When the service worker activates -> delete old caches so we don't fill
+// the user memory with unused data
+self.addEventListener('activate', event => {
+    event.waitUntil(caches
+        .keys()
+        .then(keys => Promise.all(keys
+            .filter(key => key.startsWith('restaurant-reviews') && key != cacheName)
+            .map(key => caches.delete(key))
+        ))
     )
 })
 
