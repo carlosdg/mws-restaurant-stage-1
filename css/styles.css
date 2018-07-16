@@ -65,20 +65,21 @@ img {
 /* Styles for skip link */
 .skip-link {
   position: absolute;
-  padding: 0.5rem;
-  border: 2px solid black;
   background-color: white;
   z-index: 1;
   margin: 0.5rem;
-  box-shadow: 3px 5px 10px -3px black;
   border-radius: 5px;
 
   /* Hidden until it receives focus */
-  opacity: 0;
-  transition: opacity 0.2s ease;
+  height: 0;
+  overflow: hidden;
+  transition: all 0.1s ease;
 }
 .skip-link:focus {
-  opacity: 1;
+  height: auto;
+  padding: 0.5rem;
+  border: 2px solid black;
+  box-shadow: 3px 5px 10px -3px black;
 }
 
 /* Styles for the header */
