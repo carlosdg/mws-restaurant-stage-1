@@ -151,16 +151,12 @@ createRestaurantInfoItemHtml = (restaurant) => {
   li.append(name);
 
   const image = document.createElement('img');
+  const imageSources = DBHelper.getRestaurantPhotoSources(restaurant.id);
   image.classList.add('restaurant-preview-img');
   image.setAttribute('role', 'presentation');
   image.setAttribute('alt', '');
-  image.setAttribute('src', restaurant.restaurantPhotoInfo[0].url);
-  image.setAttribute('srcset',
-    restaurant
-    .restaurantPhotoInfo
-    .map(({url, width}) => `${url} ${width}w`)
-    .join(', ')
-  );
+  image.setAttribute('src', imageSources[0].url);
+  image.setAttribute('srcset', imageSources.map(({url, width}) => `${url} ${width}w`).join(', '));
   image.setAttribute('sizes', '300px');
   li.append(image);
 

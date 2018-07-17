@@ -1,4 +1,4 @@
-const cacheName = 'restaurant-reviews-v1';
+const cacheName = 'restaurant-reviews-v2';
 
 // Cache vital assets on install
 self.addEventListener('install', event => {
@@ -9,7 +9,6 @@ self.addEventListener('install', event => {
                 '/',
                 '/restaurant.html',
                 'css/styles.css',
-                'data/restaurants.json',
                 'js/dbhelper.js',
                 'js/main.js',
                 'js/restaurant_info.js'

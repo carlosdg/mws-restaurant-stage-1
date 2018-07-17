@@ -8,46 +8,37 @@ class DBHelper {
    * Change this to restaurants.json file location on your server.
    */
   static get DATABASE_URL() {
-    const port = 8000 // Change this to your server port
-    return `http://localhost:${port}/data/restaurants.json`;
+    const port = 1337;
+    return `http://localhost:${port}/restaurants`;
+  }
+
+  /**
+   * Returns the URL to connect to the API to get the restaurant information
+   */
+  static getRestaurantDatabaseUrl(id) {
+    return `${DBHelper.DATABASE_URL}/${id}`;
   }
 
   /**
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', DBHelper.DATABASE_URL);
-    xhr.onload = () => {
-      if (xhr.status === 200) { // Got a success response from server!
-        const json = JSON.parse(xhr.responseText);
-        const restaurants = json.restaurants;
-        callback(null, restaurants);
-      } else { // Oops!. Got an error from server.
-        const error = (`Request failed. Returned status of ${xhr.status}`);
-        callback(error, null);
-      }
-    };
-    xhr.send();
+    fetch(DBHelper.DATABASE_URL)
+      .then(response => response.json())
+      .then(restaurants => callback(null, restaurants))
+      .catch(error => callback(error, null))
   }
 
   /**
    * Fetch a restaurant by its ID.
    */
   static fetchRestaurantById(id, callback) {
-    // fetch all restaurants with proper error handling.
-    DBHelper.fetchRestaurants((error, restaurants) => {
-      if (error) {
-        callback(error, null);
-      } else {
-        const restaurant = restaurants.find(r => r.id == id);
-        if (restaurant) { // Got the restaurant
-          callback(null, restaurant);
-        } else { // Restaurant does not exist in the database
-          callback('Restaurant does not exist', null);
-        }
-      }
-    });
+    const dbUrl = DBHelper.getRestaurantDatabaseUrl(id);
+    
+    fetch(dbUrl)
+      .then(response => response.json())
+      .then(restaurant => callback(null, restaurant))
+      .catch(error => callback(error, null))
   }
 
   /**
@@ -138,12 +129,28 @@ class DBHelper {
       }
     });
   }
-
+  
   /**
    * Restaurant page URL.
    */
   static urlForRestaurant(restaurant) {
     return (`./restaurant.html?id=${restaurant.id}`);
+  }
+  
+  /**
+   * Returns the location of the restaurant photos
+   */
+  static getRestaurantPhotoSources(restaurantId) {
+    return [
+      {
+        url: `img/400/${restaurantId}.jpg`,
+        width: 400
+      },
+      {
+        url: `img/800/${restaurantId}.jpg`,
+        width: 800
+      }
+    ]
   }
 
   /**

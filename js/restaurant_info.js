@@ -77,16 +77,12 @@ fillRestaurantHtml = (restaurant = self.restaurant) => {
   address.innerText = restaurant.address;
 
   const image = document.getElementById('restaurant-img');
+  const imageSources = DBHelper.getRestaurantPhotoSources(restaurant.id);
   image.className = 'restaurant-img';
   image.setAttribute('alt', '');
   image.setAttribute('role', 'presentation');
-  image.setAttribute('src', restaurant.restaurantPhotoInfo[0].url);
-  image.setAttribute('srcset',
-    restaurant
-      .restaurantPhotoInfo
-      .map(({url, width}) => `${url} ${width}w`)
-      .join(', ')
-  );
+  image.setAttribute('src', imageSources[0].url);
+  image.setAttribute('srcset', imageSources.map(({url, width}) => `${url} ${width}w`).join(', '));
   image.setAttribute('sizes', `
     (max-width: 700px) 100vw,
     (min-width: 701px) 40vw
