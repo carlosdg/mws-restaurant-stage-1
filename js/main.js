@@ -1,36 +1,58 @@
 let restaurants,
   neighborhoods,
   cuisines
-var newMap
+var map
 var markers = []
 
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', (event) => {
-  initMap(); // added 
+  initMap();
   fetchNeighborhoods();
   fetchCuisines();
 });
+
+/**
+ * Initialize leaflet map.
+ */
+initMap = () => {
+  self.map = L.map('map', {
+    center: [40.722216, -73.987501],
+    zoom: 12,
+    scrollWheelZoom: false
+  });
+  
+  L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={accessToken}', {
+    accessToken: 'pk.eyJ1IjoiY2FybG9zLWRvbWluZ3VleiIsImEiOiJjampvOWE0ZnIxNnd3M3Zyc3pxM2ZnNHJkIn0.y4purOXmeN0qCA2vW4etCg',
+    maxZoom: 18,
+    attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+      '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+      'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    id: 'mapbox.streets'
+  }).addTo(map);
+
+  updateRestaurants();
+}
 
 /**
  * Fetch all neighborhoods and set their HTML.
  */
 fetchNeighborhoods = () => {
   DBHelper.fetchNeighborhoods((error, neighborhoods) => {
-    if (error) { // Got an error
+    if (error) {
       console.error(error);
     } else {
       self.neighborhoods = neighborhoods;
-      fillNeighborhoodsHTML();
+      fillNeighborhoodFilterHtml();
     }
   });
 }
 
 /**
- * Set neighborhoods HTML.
+ * Set neighborhood filter HTML.
  */
-fillNeighborhoodsHTML = (neighborhoods = self.neighborhoods) => {
+fillNeighborhoodFilterHtml = (neighborhoods = self.neighborhoods) => {
   const select = document.getElementById('neighborhoods-select');
   neighborhoods.forEach(neighborhood => {
     const option = document.createElement('option');
@@ -49,15 +71,15 @@ fetchCuisines = () => {
       console.error(error);
     } else {
       self.cuisines = cuisines;
-      fillCuisinesHTML();
+      fillCuisineFilterHtml();
     }
   });
 }
 
 /**
- * Set cuisines HTML.
+ * Set cuisine filter HTML.
  */
-fillCuisinesHTML = (cuisines = self.cuisines) => {
+fillCuisineFilterHtml = (cuisines = self.cuisines) => {
   const select = document.getElementById('cuisines-select');
 
   cuisines.forEach(cuisine => {
@@ -66,28 +88,6 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
     option.value = cuisine;
     select.append(option);
   });
-}
-
-/**
- * Initialize leaflet map, called from HTML.
- */
-initMap = () => {
-  self.newMap = L.map('map', {
-        center: [40.722216, -73.987501],
-        zoom: 12,
-        scrollWheelZoom: false
-      });
-  
-  L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={accessToken}', {
-    accessToken: 'pk.eyJ1IjoiY2FybG9zLWRvbWluZ3VleiIsImEiOiJjampvOWE0ZnIxNnd3M3Zyc3pxM2ZnNHJkIn0.y4purOXmeN0qCA2vW4etCg',
-    maxZoom: 18,
-    attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-      '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-      'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-    id: 'mapbox.streets'
-  }).addTo(newMap);
-
-  updateRestaurants();
 }
 
 /**
@@ -100,15 +100,16 @@ updateRestaurants = () => {
   const cIndex = cSelect.selectedIndex;
   const nIndex = nSelect.selectedIndex;
 
-  const cuisine = cSelect[cIndex].value;
-  const neighborhood = nSelect[nIndex].value;
+  // If the index is not valid we use 'all' as default
+  const cuisine = cSelect[cIndex] ? cSelect[cIndex].value : 'all';
+  const neighborhood = nSelect[nIndex] ? nSelect[nIndex].value : 'all';
 
   DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, (error, restaurants) => {
-    if (error) { // Got an error!
+    if (error) {
       console.error(error);
     } else {
-      resetRestaurants(restaurants);
-      fillRestaurantsHTML();
+      resetRestaurantInfoList(restaurants);
+      fillRestaurantInfoListHtml();
     }
   })
 }
@@ -116,14 +117,14 @@ updateRestaurants = () => {
 /**
  * Clear current restaurants, their HTML and remove their map markers.
  */
-resetRestaurants = (restaurants) => {
+resetRestaurantInfoList = (restaurants) => {
   // Remove all restaurants
   self.restaurants = [];
   const ul = document.getElementById('restaurants-list');
   ul.innerHTML = '';
 
   // Remove all map markers
-  self.markers.forEach(m => m.setMap(null));
+  self.markers.forEach(m => self.map.removeLayer(m));
   self.markers = [];
   self.restaurants = restaurants;
 }
@@ -131,10 +132,10 @@ resetRestaurants = (restaurants) => {
 /**
  * Create all restaurants HTML and add them to the webpage.
  */
-fillRestaurantsHTML = (restaurants = self.restaurants) => {
+fillRestaurantInfoListHtml = (restaurants = self.restaurants) => {
   const ul = document.getElementById('restaurants-list');
   restaurants.forEach(restaurant => {
-    ul.append(createRestaurantHTML(restaurant));
+    ul.append(createRestaurantInfoItemHtml(restaurant));
   });
   addMarkersToMap();
 }
@@ -142,7 +143,7 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 /**
  * Create restaurant HTML.
  */
-createRestaurantHTML = (restaurant) => {
+createRestaurantInfoItemHtml = (restaurant) => {
   const li = document.createElement('li');
   li.classList.add('restaurant-info-preview');
 
@@ -188,22 +189,15 @@ createRestaurantHTML = (restaurant) => {
  */
 addMarkersToMap = (restaurants = self.restaurants) => {
   restaurants.forEach(restaurant => {
-    // Add marker to the map
-    const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.newMap);
-    marker.on("click", onClick);
-    function onClick() {
-      window.location.href = marker.options.url;
-    }
-  });
-} 
-/* addMarkersToMap = (restaurants = self.restaurants) => {
-  restaurants.forEach(restaurant => {
-    // Add marker to the map
+    // Create marker for the current restaurant
     const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
-    google.maps.event.addListener(marker, 'click', () => {
-      window.location.href = marker.url
-    });
-    self.markers.push(marker);
-  });
-} */
 
+    // Add marker to the list
+    self.markers.push(marker);
+
+    // Treat it as a link (a feature for convenience)
+    const navigateToRestaurantPage = () => window.location.href = marker.options.url;
+    marker.on("click", navigateToRestaurantPage);
+    marker.on("touch", navigateToRestaurantPage);
+  });
+}
