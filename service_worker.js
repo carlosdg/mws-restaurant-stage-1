@@ -7,7 +7,6 @@ self.addEventListener('install', event => {
         .then(cache =>
             cache.addAll([
                 '/',
-                '/restaurant.html',
                 'css/styles.css',
                 'js/dbhelper.js',
                 'js/main.js',
@@ -29,22 +28,36 @@ self.addEventListener('activate', event => {
     )
 })
 
-// Returns the response cached or fetches the request and adds it to the cache
-// if there was no response cached.
+// Returns the response cached or fetches the request.
+// If the request is from our origin we also keep it in the cache
 self.addEventListener('fetch', event => {
-    const response = caches
-        .open(cacheName)
-        .then(cache => cache
-            .match(event.request)
-            .then(response => {
-                if (response) { return response; }
+    const requestUrl = new URL(event.request.url);
+    let response;
 
-                return fetch(event.request).then(networkResponse => {
-                    cache.put(event.request, networkResponse.clone());
-                    return networkResponse;
+    if (requestUrl.origin !== location.origin) {
+        // If the request is not from our origin and it is not in the cache ->
+        // do not store it in the cache, just fetch it
+        response = caches
+            .match(event.request)
+            .then(cacheResponse => cacheResponse || fetch(event.request))
+    }
+    else {
+        // If the request is for a resource of our origin and it is not cached ->
+        // fetch it and add it to the cache
+        response = caches
+            .open(cacheName)
+            .then(cache => caches
+                .match(event.request)
+                .then(cacheResponse => {
+                    if (cacheResponse) { return cacheResponse; }
+
+                    return fetch(event.request).then(networkResponse => {
+                        cache.put(event.request, networkResponse.clone());
+                        return networkResponse;
+                    });
                 })
-            })
-        )
+            );
+    }
 
     event.respondWith(response);
 })
