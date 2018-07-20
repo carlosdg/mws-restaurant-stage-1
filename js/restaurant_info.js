@@ -50,9 +50,9 @@ fetchRestaurantFromUrl = (callback) => {
     return;
   }
 
-  const id = getParameterByName('id');
-  if (!id) {
-    callback('No restaurant id in URL', null);
+  const id = parseInt(getParameterByName('id'), 10);
+  if (isNaN(id)) {
+    callback('Unknown id in URL', null);
     return;
   }
 
@@ -77,7 +77,7 @@ fillRestaurantHtml = (restaurant = self.restaurant) => {
   address.innerText = restaurant.address;
 
   const image = document.getElementById('restaurant-img');
-  const imageSources = DBHelper.getRestaurantPhotoSources(restaurant.id);
+  const imageSources = DBHelper.getRestaurantPhotoSources(restaurant);
   image.className = 'restaurant-img';
   image.setAttribute('alt', '');
   image.setAttribute('role', 'presentation');

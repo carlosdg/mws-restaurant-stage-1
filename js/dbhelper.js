@@ -1,3 +1,7 @@
+const dbPromise = idb.open('restaurant_reviews', 1, db => {
+  db.createObjectStore('restaurants', { keyPath: 'id' });
+});
+
 /**
  * Common database helper functions.
  */
@@ -7,7 +11,7 @@ class DBHelper {
    * Database URL.
    * Change this to restaurants.json file location on your server.
    */
-  static get DATABASE_URL() {
+  static get _DATABASE_URL() {
     const port = 1337;
     return `http://localhost:${port}/restaurants`;
   }
@@ -15,30 +19,99 @@ class DBHelper {
   /**
    * Returns the URL to connect to the API to get the restaurant information
    */
-  static getRestaurantDatabaseUrl(id) {
-    return `${DBHelper.DATABASE_URL}/${id}`;
+  static _getRestaurantDatabaseUrl(id) {
+    return `${DBHelper._DATABASE_URL}/${id}`;
   }
 
   /**
-   * Fetch all restaurants.
+   * Retrieves all restaurants from the data base
+   */
+  static _getRestaurantsFromIdb() {
+    return dbPromise
+      .then(db => db.transaction('restaurants').objectStore('restaurants').getAll())
+  }
+
+  /**
+   * Retrieves the restaurants with the given ID from the data base
+   */
+  static _getRestaurantFromIdb(id) {
+    return dbPromise
+      .then(db => db.transaction('restaurants').objectStore('restaurants').get(id))
+  }
+
+  /**
+   * Updates the given restaurants in the database
+   */
+  static _updateRestaurantsFromIdb(restaurants) {
+    return dbPromise
+      .then(db => {
+        const store = db.transaction('restaurants', 'readwrite').objectStore('restaurants');
+        restaurants.forEach(restaurant => store.put(restaurant));
+      });
+  }
+
+  /**
+   * Fetches the restaurants, they are put/updated in IndexedDB.
+   * 
+   * If the network request fails, the callback is called with the restaurants
+   * from IndexedDB.
+   * 
+   * If the network fetch and IndexedDB fails, it calls the callback with the error
    */
   static fetchRestaurants(callback) {
-    fetch(DBHelper.DATABASE_URL)
+    fetch(DBHelper._DATABASE_URL)
       .then(response => response.json())
-      .then(restaurants => callback(null, restaurants))
-      .catch(error => callback(error, null))
+      .then(restaurants => {
+        // On network success =>
+        // - Update the DB entries for the new restaurants
+        DBHelper._updateRestaurantsFromIdb(restaurants);
+        
+        // - Return the restaurants
+        return restaurants;
+      })
+      // On network fail => try to get the data from IDB
+      .catch(_ => DBHelper._getRestaurantsFromIdb())
+      // Call the callback with the restaurants of the error
+      // (NOTE: we don't break the behavior in .then and .catch because
+      //  in that case when the callback throws in .then 
+      //  the catch would be called too D:)
+      .then(
+        restaurants => callback(null, restaurants),
+        error => callback(error, null)
+      )
   }
 
   /**
-   * Fetch a restaurant by its ID.
+   * Fetches a restaurant, it is put/updated in IndexedDB.
+   * 
+   * If the network request fails, the callback is called with the restaurant
+   * from IndexedDB. 
+   * 
+   * If the network fetch and IndexedDB fails, it calls the callback with the error
    */
   static fetchRestaurantById(id, callback) {
-    const dbUrl = DBHelper.getRestaurantDatabaseUrl(id);
+    const dbUrl = DBHelper._getRestaurantDatabaseUrl(id);
     
     fetch(dbUrl)
       .then(response => response.json())
-      .then(restaurant => callback(null, restaurant))
-      .catch(error => callback(error, null))
+      .then(restaurant => {
+        // On network success => 
+        // - Update the DB entry for the new restaurant
+        DBHelper._updateRestaurantsFromIdb([restaurant]);
+        
+        // - Return the restaurants
+        return restaurant
+      })
+      // On network fail => try to get the restaurant from IDB
+      .catch(_ => DBHelper._getRestaurantFromIdb(id))
+      // Call the callback with the restaurants of the error
+      // (NOTE: we don't break the behavior in .then and .catch because
+      //  in that case when the callback throws in .then 
+      //  the catch would be called too D:)
+      .then(
+        restaurants => callback(null, restaurants),
+        error => callback(error, null)
+      )
   }
 
   /**
@@ -140,14 +213,14 @@ class DBHelper {
   /**
    * Returns the location of the restaurant photos
    */
-  static getRestaurantPhotoSources(restaurantId) {
+  static getRestaurantPhotoSources(restaurant) {
     return [
       {
-        url: `img/400/${restaurantId}.jpg`,
+        url: `img/400/${restaurant.id}.jpg`,
         width: 400
       },
       {
-        url: `img/800/${restaurantId}.jpg`,
+        url: `img/800/${restaurant.id}.jpg`,
         width: 800
       }
     ]

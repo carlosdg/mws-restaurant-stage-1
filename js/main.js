@@ -151,7 +151,7 @@ createRestaurantInfoItemHtml = (restaurant) => {
   li.append(name);
 
   const image = document.createElement('img');
-  const imageSources = DBHelper.getRestaurantPhotoSources(restaurant.id);
+  const imageSources = DBHelper.getRestaurantPhotoSources(restaurant);
   image.classList.add('restaurant-preview-img');
   image.setAttribute('role', 'presentation');
   image.setAttribute('alt', '');
