@@ -8,9 +8,11 @@ self.addEventListener('install', event => {
             cache.addAll([
                 '/',
                 'css/styles.css',
+                'js/jake_archibald_idb.js',
                 'js/dbhelper.js',
                 'js/main.js',
-                'js/restaurant_info.js'
+                'js/restaurant_info.js',
+                'https://unpkg.com/leaflet@1.3.1/dist/leaflet.js'
             ])
         )
     )

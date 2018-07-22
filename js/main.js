@@ -1,17 +1,29 @@
-let restaurants,
-  neighborhoods,
-  cuisines
-var map
-var markers = []
+let dbHelper;
+var map;
+var markers = [];
 
 /**
- * Fetch neighborhoods and cuisines as soon as the page is loaded.
+ * As soon as the page is loaded:
+ *  - Initialize the map
+ *  - Initialize the application with the restaurant data from IDB
+ *  - Fetch new data from the remote server to update IDB and update the application
  */
-document.addEventListener('DOMContentLoaded', (event) => {
+document.addEventListener('DOMContentLoaded', _ => {
+  self.dbHelper = new DBHelper();
   initMap();
-  fetchNeighborhoods();
-  fetchCuisines();
+  main();
+
+  self.dbHelper.updateDb().then(updatedDbHelper => {
+    self.dbHelper = updatedDbHelper;
+    main();
+  });
 });
+
+main = () => {
+  updateRestaurants();
+  updateNeighborhoods();
+  updateCuisines();
+};
 
 /**
  * Initialize leaflet map.
@@ -22,64 +34,60 @@ initMap = () => {
     zoom: 12,
     scrollWheelZoom: false
   });
-  
-  L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={accessToken}', {
-    accessToken: 'pk.eyJ1IjoiY2FybG9zLWRvbWluZ3VleiIsImEiOiJjampvOWE0ZnIxNnd3M3Zyc3pxM2ZnNHJkIn0.y4purOXmeN0qCA2vW4etCg',
-    maxZoom: 18,
-    attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-      '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-      'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-    id: 'mapbox.streets'
-  }).addTo(map);
 
-  updateRestaurants();
-}
+  L.tileLayer(
+    'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={accessToken}',
+    {
+      accessToken:
+        'pk.eyJ1IjoiY2FybG9zLWRvbWluZ3VleiIsImEiOiJjampvOWE0ZnIxNnd3M3Zyc3pxM2ZnNHJkIn0.y4purOXmeN0qCA2vW4etCg',
+      maxZoom: 18,
+      attribution:
+        'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+        '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+        'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+      id: 'mapbox.streets'
+    }
+  ).addTo(self.map);
+};
 
 /**
  * Fetch all neighborhoods and set their HTML.
  */
-fetchNeighborhoods = () => {
-  DBHelper.fetchNeighborhoods((error, neighborhoods) => {
-    if (error) {
-      console.error(error);
-    } else {
-      self.neighborhoods = neighborhoods;
-      fillNeighborhoodFilterHtml();
-    }
-  });
-}
+updateNeighborhoods = () => {
+  self.dbHelper
+    .getNeighborhoods()
+    .then(neighborhoods => fillNeighborhoodFilterHtml(neighborhoods))
+    .catch(console.error);
+};
 
 /**
  * Set neighborhood filter HTML.
  */
-fillNeighborhoodFilterHtml = (neighborhoods = self.neighborhoods) => {
+fillNeighborhoodFilterHtml = neighborhoods => {
   const select = document.getElementById('neighborhoods-select');
+
   neighborhoods.forEach(neighborhood => {
     const option = document.createElement('option');
     option.innerHTML = neighborhood;
     option.value = neighborhood;
     select.append(option);
   });
-}
+};
 
 /**
  * Fetch all cuisines and set their HTML.
  */
-fetchCuisines = () => {
-  DBHelper.fetchCuisines((error, cuisines) => {
-    if (error) { // Got an error!
-      console.error(error);
-    } else {
-      self.cuisines = cuisines;
-      fillCuisineFilterHtml();
-    }
-  });
-}
+updateCuisines = () => {
+  self.dbHelper
+    .getCuisines()
+    .then(cuisines => fillCuisineFilterHtml(cuisines))
+    .catch(console.error);
+};
 
 /**
  * Set cuisine filter HTML.
  */
-fillCuisineFilterHtml = (cuisines = self.cuisines) => {
+fillCuisineFilterHtml = cuisines => {
   const select = document.getElementById('cuisines-select');
 
   cuisines.forEach(cuisine => {
@@ -88,7 +96,7 @@ fillCuisineFilterHtml = (cuisines = self.cuisines) => {
     option.value = cuisine;
     select.append(option);
   });
-}
+};
 
 /**
  * Update page and map for current restaurants.
@@ -102,46 +110,37 @@ updateRestaurants = () => {
 
   // If the index is not valid we use 'all' as default
   const cuisine = cSelect[cIndex] ? cSelect[cIndex].value : 'all';
-  const neighborhood = nSelect[nIndex] ? nSelect[nIndex].value : 'all';
+  const neighborhood = nSelect[nIndex] ? nSelect[nIndex].value : 'all';
 
-  DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, (error, restaurants) => {
-    if (error) {
-      console.error(error);
-    } else {
-      resetRestaurantInfoList(restaurants);
-      fillRestaurantInfoListHtml();
-    }
-  })
-}
-
-/**
- * Clear current restaurants, their HTML and remove their map markers.
- */
-resetRestaurantInfoList = (restaurants) => {
-  // Remove all restaurants
-  self.restaurants = [];
-  const ul = document.getElementById('restaurants-list');
-  ul.innerHTML = '';
-
-  // Remove all map markers
-  self.markers.forEach(m => self.map.removeLayer(m));
-  self.markers = [];
-  self.restaurants = restaurants;
-}
+  self.dbHelper
+    .getFilteredRestaurants({ cuisine, neighborhood })
+    .then(restaurants => {
+      updateRestaurantInfoListHtml(restaurants);
+      updateMapMarkers(restaurants);
+    })
+    .catch(console.error);
+};
 
 /**
+ * Clears current restaurants and their HTML.
  * Create all restaurants HTML and add them to the webpage.
  */
-fillRestaurantInfoListHtml = (restaurants = self.restaurants) => {
+updateRestaurantInfoListHtml = restaurants => {
   const ul = document.getElementById('restaurants-list');
-  restaurants.forEach(restaurant => ul.append(createRestaurantInfoItemHtml(restaurant)));
-  addMarkersToMap();
-}
+
+  // Remove all restaurants
+  ul.innerHTML = '';
+
+  // Add new restaurants
+  restaurants.forEach(restaurant =>
+    ul.append(createRestaurantInfoItemHtml(restaurant))
+  );
+};
 
 /**
  * Create restaurant HTML.
  */
-createRestaurantInfoItemHtml = (restaurant) => {
+createRestaurantInfoItemHtml = restaurant => {
   const li = document.createElement('li');
   li.classList.add('restaurant-info-preview');
 
@@ -156,7 +155,10 @@ createRestaurantInfoItemHtml = (restaurant) => {
   image.setAttribute('role', 'presentation');
   image.setAttribute('alt', '');
   image.setAttribute('src', imageSources[0].url);
-  image.setAttribute('srcset', imageSources.map(({url, width}) => `${url} ${width}w`).join(', '));
+  image.setAttribute(
+    'srcset',
+    imageSources.map(({ url, width }) => `${url} ${width}w`).join(', ')
+  );
   image.setAttribute('sizes', '300px');
   li.append(image);
 
@@ -167,21 +169,27 @@ createRestaurantInfoItemHtml = (restaurant) => {
   li.append(address);
 
   const more = document.createElement('a');
-  const description = 'View details of the restaurant "' + restaurant.name + '"';
+  const description =
+    'View details of the restaurant "' + restaurant.name + '"';
   more.setAttribute('aria-label', description);
   more.setAttribute('title', description);
   more.setAttribute('href', DBHelper.urlForRestaurant(restaurant));
   more.classList.add('restaurant-preview-details-link');
   more.innerText = 'View Details';
-  li.append(more)
+  li.append(more);
 
-  return li
-}
+  return li;
+};
 
 /**
  * Add markers for current restaurants to the map.
  */
-addMarkersToMap = (restaurants = self.restaurants) => {
+updateMapMarkers = restaurants => {
+  // Remove all previous markers
+  self.markers.forEach(m => self.map.removeLayer(m));
+  self.markers = [];
+
+  // Add new markers
   restaurants.forEach(restaurant => {
     // Create marker for the current restaurant
     const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
@@ -190,8 +198,9 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     self.markers.push(marker);
 
     // Treat it as a link (a feature for convenience)
-    const navigateToRestaurantPage = () => window.location.href = marker.options.url;
-    marker.on("click", navigateToRestaurantPage);
-    marker.on("touch", navigateToRestaurantPage);
+    const navigateToRestaurantPage = () =>
+      (window.location.href = marker.options.url);
+    marker.on('click', navigateToRestaurantPage);
+    marker.on('touch', navigateToRestaurantPage);
   });
-}
+};
