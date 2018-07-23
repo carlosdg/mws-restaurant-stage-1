@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', _ => {
 /**
  * Initialize leaflet map
  */
-initMap = restaurant => {
+function initMap(restaurant) {
   self.map = L.map('map', {
     center: [restaurant.latlng.lat, restaurant.latlng.lng],
     zoom: 16,
@@ -40,12 +40,12 @@ initMap = restaurant => {
       id: 'mapbox.streets'
     }
   ).addTo(map);
-};
+}
 
 /**
  * Get current restaurant from page URL.
  */
-fetchRestaurantFromUrl = () => {
+function fetchRestaurantFromUrl() {
   const id = parseInt(getParameterByName('id'), 10);
 
   if (isNaN(id)) {
@@ -69,12 +69,12 @@ fetchRestaurantFromUrl = () => {
         return restaurant;
       });
   });
-};
+}
 
 /**
  * Create restaurant HTML and add it to the webpage
  */
-fillRestaurantHtml = restaurant => {
+function fillRestaurantHtml(restaurant) {
   const name = document.getElementById('restaurant-name');
   name.innerText = restaurant.name;
 
@@ -104,12 +104,12 @@ fillRestaurantHtml = restaurant => {
 
   fillRestaurantHoursHtml(restaurant.operating_hours);
   fillReviewsHtml(restaurant.reviews);
-};
+}
 
 /**
  * Create restaurant operating hours HTML table and add it to the webpage.
  */
-fillRestaurantHoursHtml = operatingHours => {
+function fillRestaurantHoursHtml(operatingHours) {
   const hours = document.getElementById('restaurant-hours');
   for (let key in operatingHours) {
     const row = document.createElement('tr');
@@ -127,12 +127,12 @@ fillRestaurantHoursHtml = operatingHours => {
 
     hours.appendChild(row);
   }
-};
+}
 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHtml = reviews => {
+function fillReviewsHtml(reviews) {
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h2');
   title.innerHTML = 'Reviews';
@@ -150,12 +150,12 @@ fillReviewsHtml = reviews => {
     ul.appendChild(createReviewHtml(review));
   });
   container.appendChild(ul);
-};
+}
 
 /**
  * Create review HTML and add it to the webpage.
  */
-createReviewHtml = review => {
+function createReviewHtml(review) {
   const li = document.createElement('li');
   li.classList.add('review');
 
@@ -180,22 +180,22 @@ createReviewHtml = review => {
   li.appendChild(comments);
 
   return li;
-};
+}
 
 /**
  * Add restaurant name to the breadcrumb navigation menu
  */
-fillBreadcrumb = restaurant => {
+function fillBreadcrumb(restaurant) {
   const breadcrumb = document.getElementById('breadcrumb');
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
   breadcrumb.appendChild(li);
-};
+}
 
 /**
  * Get a parameter by name from page URL.
  */
-getParameterByName = (name, url) => {
+function getParameterByName(name, url) {
   if (!url) url = window.location.href;
   name = name.replace(/[\[\]]/g, '\\$&');
   const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`),
@@ -203,4 +203,4 @@ getParameterByName = (name, url) => {
   if (!results) return null;
   if (!results[2]) return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
-};
+}

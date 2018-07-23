@@ -19,16 +19,16 @@ document.addEventListener('DOMContentLoaded', _ => {
   });
 });
 
-main = () => {
+function main() {
   updateRestaurants();
   updateNeighborhoods();
   updateCuisines();
-};
+}
 
 /**
  * Initialize leaflet map.
  */
-initMap = () => {
+function initMap() {
   self.map = L.map('map', {
     center: [40.722216, -73.987501],
     zoom: 12,
@@ -48,22 +48,22 @@ initMap = () => {
       id: 'mapbox.streets'
     }
   ).addTo(self.map);
-};
+}
 
 /**
  * Fetch all neighborhoods and set their HTML.
  */
-updateNeighborhoods = () => {
+function updateNeighborhoods() {
   self.dbHelper
     .getNeighborhoods()
     .then(neighborhoods => fillNeighborhoodFilterHtml(neighborhoods))
     .catch(console.error);
-};
+}
 
 /**
  * Set neighborhood filter HTML.
  */
-fillNeighborhoodFilterHtml = neighborhoods => {
+function fillNeighborhoodFilterHtml(neighborhoods) {
   const select = document.getElementById('neighborhoods-select');
 
   neighborhoods.forEach(neighborhood => {
@@ -72,22 +72,22 @@ fillNeighborhoodFilterHtml = neighborhoods => {
     option.value = neighborhood;
     select.append(option);
   });
-};
+}
 
 /**
  * Fetch all cuisines and set their HTML.
  */
-updateCuisines = () => {
+function updateCuisines() {
   self.dbHelper
     .getCuisines()
     .then(cuisines => fillCuisineFilterHtml(cuisines))
     .catch(console.error);
-};
+}
 
 /**
  * Set cuisine filter HTML.
  */
-fillCuisineFilterHtml = cuisines => {
+function fillCuisineFilterHtml(cuisines) {
   const select = document.getElementById('cuisines-select');
 
   cuisines.forEach(cuisine => {
@@ -96,12 +96,12 @@ fillCuisineFilterHtml = cuisines => {
     option.value = cuisine;
     select.append(option);
   });
-};
+}
 
 /**
  * Update page and map for current restaurants.
  */
-updateRestaurants = () => {
+function updateRestaurants() {
   const cSelect = document.getElementById('cuisines-select');
   const nSelect = document.getElementById('neighborhoods-select');
 
@@ -119,13 +119,13 @@ updateRestaurants = () => {
       updateMapMarkers(restaurants);
     })
     .catch(console.error);
-};
+}
 
 /**
  * Clears current restaurants and their HTML.
  * Create all restaurants HTML and add them to the webpage.
  */
-updateRestaurantInfoListHtml = restaurants => {
+function updateRestaurantInfoListHtml(restaurants) {
   const ul = document.getElementById('restaurants-list');
 
   // Remove all restaurants
@@ -135,12 +135,12 @@ updateRestaurantInfoListHtml = restaurants => {
   restaurants.forEach(restaurant =>
     ul.append(createRestaurantInfoItemHtml(restaurant))
   );
-};
+}
 
 /**
  * Create restaurant HTML.
  */
-createRestaurantInfoItemHtml = restaurant => {
+function createRestaurantInfoItemHtml(restaurant) {
   const li = document.createElement('li');
   li.classList.add('restaurant-info-preview');
 
@@ -179,12 +179,12 @@ createRestaurantInfoItemHtml = restaurant => {
   li.append(more);
 
   return li;
-};
+}
 
 /**
  * Add markers for current restaurants to the map.
  */
-updateMapMarkers = restaurants => {
+function updateMapMarkers(restaurants) {
   // Remove all previous markers
   self.markers.forEach(m => self.map.removeLayer(m));
   self.markers = [];
@@ -203,4 +203,4 @@ updateMapMarkers = restaurants => {
     marker.on('click', navigateToRestaurantPage);
     marker.on('touch', navigateToRestaurantPage);
   });
-};
+}
