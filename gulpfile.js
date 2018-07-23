@@ -11,32 +11,29 @@ const browsers = 'last 10 versions';
 
 gulp.task('dist', [
   'copy-images',
-  'copy-manifest',
+  'copy-json',
   'dist-html',
   'dist-scripts',
   'dist-styles'
 ]);
 
 /**
- * 
- */ 
-gulp.task('default', function() {
-    browserSync.init({
-        server: {
-            baseDir: "dist"
-        }    
-    });
+ *
+ */
 
-    gulp.watch('src/**/*.html', ['dist-html', browserSync.reload]);
-    gulp.watch('src/css/**/*.css', ['dist-styles', browserSync.reload]);
-    gulp.watch('src/**/*.js', ['dist-scripts', browserSync.reload]);
-    gulp.watch('src/**/*.json', ['copy-json', browserSync.reload]);
-    gulp.watch('src/img/**/*', ['copy-images', browserSync.reload]);
+gulp.task('default', ['dist'], function() {
+  browserSync.init({
+    server: {
+      baseDir: 'dist'
+    }
+  });
+
+  gulp.watch('src/**/*.html', ['dist-html', browserSync.reload]);
+  gulp.watch('src/css/**/*.css', ['dist-styles', browserSync.reload]);
+  gulp.watch('src/**/*.js', ['dist-scripts', browserSync.reload]);
+  gulp.watch('src/**/*.json', ['copy-json', browserSync.reload]);
+  gulp.watch('src/img/**/*', ['copy-images', browserSync.reload]);
 });
-
-// gulp.task('reload-browser-sync', function() {
-//   browserSync.reload();
-// })
 
 /**
  * Copies images
@@ -46,7 +43,7 @@ gulp.task('copy-images', function() {
 });
 
 /**
- * Copies JSON
+ * Copies JSON (manifest.json is the only one at the moment)
  */
 gulp.task('copy-json', function() {
   gulp.src('src/**/*.json').pipe(gulp.dest('dist'));
