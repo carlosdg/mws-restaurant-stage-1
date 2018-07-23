@@ -100,7 +100,7 @@ gulp.task('dist-styles', function() {
         cascade: false
       })
     )
-    .pipe(cssnano())
+    .pipe(cssnano({ zindex: false }))
     .pipe(gulp.dest('dist/css'));
 });
 
