@@ -177,6 +177,10 @@ class DBHelper {
     } else {
       return [
         {
+          url: 'img/icons/icon16.png',
+          width: 16
+        },
+        {
           url: 'img/icons/icon96.png',
           width: 96
         },

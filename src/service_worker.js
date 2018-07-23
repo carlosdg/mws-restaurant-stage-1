@@ -7,6 +7,7 @@ self.addEventListener('install', event => {
         .then(cache =>
             cache.addAll([
                 '/',
+                'img/icons/icon16.png',
                 'css/styles.css',
                 'js/jake_archibald_idb.js',
                 'js/dbhelper.js',
