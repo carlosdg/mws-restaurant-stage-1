@@ -154,12 +154,19 @@ function createRestaurantInfoItemHtml(restaurant) {
   image.classList.add('restaurant-preview-img');
   image.setAttribute('role', 'presentation');
   image.setAttribute('alt', '');
-  image.setAttribute('src', imageSources[0].url);
-  image.setAttribute(
-    'srcset',
-    imageSources.map(({ url, width }) => `${url} ${width}w`).join(', ')
-  );
-  image.setAttribute('sizes', '300px');
+
+  // Small image to load something super fast (same image as favicon)
+  image.setAttribute('src', 'img/icons/icon16.png');
+
+  // Lazy load the image
+  image.onload = function() {
+    image.setAttribute(
+      'srcset',
+      imageSources.map(({ url, width }) => `${url} ${width}w`).join(', ')
+    );
+    image.setAttribute('sizes', '300px');
+    image.onload = null;
+  };
   li.append(image);
 
   const address = document.createElement('p');

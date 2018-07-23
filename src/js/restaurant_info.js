@@ -86,18 +86,23 @@ function fillRestaurantHtml(restaurant) {
   image.className = 'restaurant-img';
   image.setAttribute('alt', '');
   image.setAttribute('role', 'presentation');
-  image.setAttribute('src', imageSources[0].url);
-  image.setAttribute(
-    'srcset',
-    imageSources.map(({ url, width }) => `${url} ${width}w`).join(', ')
-  );
-  image.setAttribute(
-    'sizes',
-    `
-    (max-width: 700px) 100vw,
-    (min-width: 701px) 40vw
-  `
-  );
+
+  // image.setAttribute('src', imageSources[0].url);
+  // Small image to load something super fast (same image as favicon)
+  image.setAttribute('src', 'img/icons/icon16.png');
+
+  // Lazy load the image
+  image.onload = function() {
+    image.setAttribute(
+      'srcset',
+      imageSources.map(({ url, width }) => `${url} ${width}w`).join(', ')
+    );
+    image.setAttribute(
+      'sizes',
+      `(max-width: 700px) 100vw, (min-width: 701px) 40vw`
+    );
+    image.onload = null;
+  };
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerText = restaurant.cuisine_type;
