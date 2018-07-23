@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', _ => {
   initMap();
   main();
 
-  self.dbHelper.updateDb().then(updatedDbHelper => {
+  self.dbHelper.updateRestaurants().then(updatedDbHelper => {
     self.dbHelper = updatedDbHelper;
     main();
   });

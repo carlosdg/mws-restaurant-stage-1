@@ -115,10 +115,25 @@ class DBHelper {
    *                    of DBHelper once IDB has been updated.
    *                    Or rejects with an error
    */
-  updateDb() {
+  updateRestaurants() {
     return fetch(DBHelper.REMOTE_DATABASE_URL)
       .then(response => response.json())
       .then(restaurants => this._updateRestaurants(restaurants))
+      .then(_ => this);
+  }
+
+  /**
+   * Tries to fetch restaurant information from the remote
+   * database and update IDB.
+   *
+   * @returns {Promise} A promise that resolves with this instance
+   *                    of DBHelper once IDB has been updated.
+   *                    Or rejects with an error
+   */
+  updateRestaurant(id) {
+    return fetch(DBHelper.REMOTE_DATABASE_URL + '/' + id)
+      .then(response => response.json())
+      .then(restaurant => this._updateRestaurants([restaurant]))
       .then(_ => this);
   }
 
@@ -142,19 +157,47 @@ class DBHelper {
   }
 
   /**
-   * Returns the location of the restaurant photos
+   * Returns the location of the restaurant photos.
+   * If no photo was found we return the icon of the app
    */
   static getRestaurantPhotoSources(restaurant) {
-    return [
-      {
-        url: `img/400/${restaurant.id}.jpg`,
-        width: 400
-      },
-      {
-        url: `img/800/${restaurant.id}.jpg`,
-        width: 800
-      }
-    ];
+    const imageName = restaurant.photograph;
+
+    if (imageName) {
+      return [
+        {
+          url: `img/400/${imageName}.jpg`,
+          width: 400
+        },
+        {
+          url: `img/800/${imageName}.jpg`,
+          width: 800
+        }
+      ];
+    } else {
+      return [
+        {
+          url: 'img/icons/icon96.png',
+          width: 96
+        },
+        {
+          url: 'img/icons/icon144.png',
+          width: 144
+        },
+        {
+          url: 'img/icons/icon192.png',
+          width: 192
+        },
+        {
+          url: 'img/icons/icon256.png',
+          width: 256
+        },
+        {
+          url: 'img/icons/icon512.png',
+          width: 512
+        },
+      ]
+    }
   }
 
   /**

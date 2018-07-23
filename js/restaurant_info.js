@@ -59,7 +59,7 @@ fetchRestaurantFromUrl = () => {
 
     // Try to update IDB and then look if we have the restaurant
     return self.dbHelper
-      .updateDb()
+      .updateRestaurant(id)
       .then(_ => self.dbHelper.getRestaurant(id))
       .then(restaurant => {
         if (!restaurant) {
