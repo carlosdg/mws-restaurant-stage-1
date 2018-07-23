@@ -31,7 +31,7 @@ gulp.task('default', function() {
     gulp.watch('src/css/**/*.css', ['dist-styles', browserSync.reload]);
     gulp.watch('src/**/*.js', ['dist-scripts', browserSync.reload]);
     gulp.watch('src/**/*.json', ['copy-json', browserSync.reload]);
-    gulp.watch('src/img/**/*', ['optimize_images', 'copy-images', browserSync.reload]);
+    gulp.watch('src/img/**/*', ['copy-images', browserSync.reload]);
 });
 
 // gulp.task('reload-browser-sync', function() {
