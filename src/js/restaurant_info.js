@@ -84,8 +84,7 @@ function fillRestaurantHtml(restaurant) {
   const image = document.getElementById('restaurant-img');
   const imageSources = DBHelper.getRestaurantPhotoSources(restaurant);
   image.className = 'restaurant-img';
-  image.setAttribute('alt', '');
-  image.setAttribute('role', 'presentation');
+  image.setAttribute('alt', `promotional image of the restaurant "${restaurant.name}"`);
 
   // image.setAttribute('src', imageSources[0].url);
   // Small image to load something super fast (same image as favicon)

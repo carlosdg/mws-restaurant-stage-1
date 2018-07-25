@@ -152,8 +152,7 @@ function createRestaurantInfoItemHtml(restaurant) {
   const image = document.createElement('img');
   const imageSources = DBHelper.getRestaurantPhotoSources(restaurant);
   image.classList.add('restaurant-preview-img');
-  image.setAttribute('role', 'presentation');
-  image.setAttribute('alt', '');
+  image.setAttribute('alt', `promotional image of the restaurant "${restaurant.name}"`);
 
   // Small image to load something super fast (same image as favicon)
   image.setAttribute('src', 'img/icons/icon16.png');
