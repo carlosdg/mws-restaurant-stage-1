@@ -23,6 +23,12 @@ a {
   color: inherit;
   text-decoration: none;
 }
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
 #map a {
   color: inherit;
 }
@@ -253,13 +259,16 @@ footer {
   justify-items: stretch;
   align-items: center;
   grid-template-rows: auto;
-  grid-template-columns: 1fr;
+  grid-template-columns: 3rem 1fr;
   grid-template-areas:
-    'header'
-    'img'
-    'type'
-    'address'
-    'schedule';
+    'fav-btn header'
+    'img img'
+    'type type'
+    'address address'
+    'schedule schedule';
+}
+#restaurant-container > button {
+  grid-area: fav-btn;
 }
 #restaurant-container > h2 {
   grid-area: header;
@@ -295,22 +304,22 @@ footer {
 
 @media screen and (min-width: 600px) {
   #restaurant-container {
-    grid-template-columns: 1fr 1rem 1fr;
+    grid-template-columns: 3rem 1fr 1rem 1fr;
     grid-template-areas:
-      'header header header'
-      'img img img'
-      'type . address'
-      'schedule schedule schedule';
+      'fav-btn header header header'
+      'img img img img'
+      'type type . address'
+      'schedule schedule schedule schedule';
   }
 }
 @media screen and (min-width: 700px) {
   #restaurant-container {
-    grid-template-columns: 1fr 1rem 1fr;
+    grid-template-columns: 3rem 1fr 1rem 1fr;
     grid-template-areas:
-      'header header header'
-      'img . schedule'
-      'type . schedule'
-      'address . schedule';
+      'fav-btn header header header'
+      'img img . schedule'
+      'type type . schedule'
+      'address address . schedule';
   }
   #restaurant-container .schedule-container {
     margin-top: 0;
@@ -322,6 +331,20 @@ footer {
   .schedule-container > .toggle-schedule {
     display: none;
   }
+}
+
+/* Styles for the favorite button */
+#restaurant-container > button svg {
+  width: 2rem;
+  height: 2rem;
+  transform: scale(0.8) rotate(0);
+  transition: all 0.3s ease-in-out;
+}
+#restaurant-container > button:hover > svg {
+  transform: scale(1) rotate(360deg);
+}
+#restaurant-container > button.favorite > svg {
+  fill: #daa520;
 }
 
 /* Styles for the reviews */
