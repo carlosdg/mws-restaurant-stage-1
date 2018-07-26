@@ -168,8 +168,14 @@ footer {
   border-radius: 5px;
   box-shadow: -3px 4px 10px 2px #ddd, 1px -1px 10px 0 #ddd;
 }
-.restaurant-info-preview .restaurant-preview-name {
+.restaurant-info-preview .restaurant-info-header {
   margin: 0 0 1rem 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.restaurant-info-preview .restaurant-preview-name {
+  margin: 0;
 }
 .restaurant-info-preview .restaurant-preview-details-link {
   display: block;
@@ -334,16 +340,16 @@ footer {
 }
 
 /* Styles for the favorite button */
-#restaurant-container > button svg {
+.favorite-btn svg {
   width: 2rem;
   height: 2rem;
   transform: scale(0.8) rotate(0);
   transition: all 0.3s ease-in-out;
 }
-#restaurant-container > button:hover > svg {
+.favorite-btn:hover > svg {
   transform: scale(1) rotate(360deg);
 }
-#restaurant-container > button.favorite > svg {
+.favorite-btn.favorite > svg {
   fill: #daa520;
 }
 

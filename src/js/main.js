@@ -144,10 +144,17 @@ function createRestaurantInfoItemHtml(restaurant) {
   const li = document.createElement('li');
   li.classList.add('restaurant-info-preview');
 
+  const headerDiv = document.createElement('div');
+  headerDiv.classList.add('restaurant-info-header');
+  li.appendChild(headerDiv);
+
   const name = document.createElement('h3');
   name.classList.add('restaurant-preview-name');
   name.innerText = restaurant.name;
-  li.append(name);
+  headerDiv.append(name);
+
+  const toggleRestaurantFavoriteButton = createToggleFavoriteButton(restaurant);
+  headerDiv.append(toggleRestaurantFavoriteButton);
 
   const image = document.createElement('img');
   const imageSources = DBHelper.getRestaurantPhotoSources(restaurant);
@@ -209,4 +216,42 @@ function updateMapMarkers(restaurants) {
     marker.on('click', navigateToRestaurantPage);
     marker.on('touch', navigateToRestaurantPage);
   });
+}
+
+function createToggleFavoriteButton(restaurant) {
+  const ADD_TO_FAVORITES_LABEL = 'Add restaurant to favorites';
+  const REMOVE_FROM_FAVORITES_LABEL = 'Remove restaurant from favorites';
+
+  const btn = document.createElement('button');
+  btn.classList.add('favorite-btn');
+  btn.setAttribute('title', ADD_TO_FAVORITES_LABEL);
+  btn.setAttribute('aria-label', ADD_TO_FAVORITES_LABEL);
+
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', 'M6.855,14.365l-1.817,6.36c-0.115,0.402,0.034,0.835,0.372,1.082c0.34,0.247,0.797,0.257,1.145,0.024L12,18.202l5.445,3.63 C17.613,21.944,17.807,22,18,22c0.207,0,0.414-0.064,0.59-0.192c0.338-0.247,0.487-0.68,0.372-1.082l-1.817-6.36l4.48-3.584 c0.308-0.247,0.442-0.651,0.343-1.033s-0.414-0.67-0.804-0.734l-5.497-0.916l-2.772-5.545c-0.34-0.678-1.449-0.678-1.789,0 L8.333,8.098L2.836,9.014c-0.39,0.064-0.704,0.353-0.804,0.734s0.035,0.786,0.343,1.033L6.855,14.365z');
+
+  btn.appendChild(svg);
+  svg.appendChild(path);
+
+  btn.addEventListener('click', addRestaurantToFavorites);
+  btn.addEventListener('touch', addRestaurantToFavorites);
+
+  function addRestaurantToFavorites() {
+    // Add/remove favorite class
+    btn.classList.toggle('favorite');
+
+    // Update the label and title to say add or remove
+    if (btn.classList.contains('favorite')) {
+      btn.setAttribute('aria-label', REMOVE_FROM_FAVORITES_LABEL);
+      btn.setAttribute('title', REMOVE_FROM_FAVORITES_LABEL);
+    } else {
+      btn.setAttribute('aria-label', ADD_TO_FAVORITES_LABEL);
+      btn.setAttribute('title', ADD_TO_FAVORITES_LABEL);
+    }
+  }
+
+  return btn;
 }
