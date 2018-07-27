@@ -1,4 +1,4 @@
-let dbHelper;
+let restaurantDb;
 var map;
 var markers = [];
 
@@ -9,14 +9,11 @@ var markers = [];
  *  - Fetch new data from the remote server to update IDB and update the application
  */
 document.addEventListener('DOMContentLoaded', _ => {
-  self.dbHelper = new DBHelper();
+  self.restaurantDb = new RestaurantsDatabase();
   initMap();
   main();
 
-  self.dbHelper.updateRestaurants().then(updatedDbHelper => {
-    self.dbHelper = updatedDbHelper;
-    main();
-  });
+  self.restaurantDb.updateRestaurants().then(_ => main());
 });
 
 function main() {
@@ -54,7 +51,7 @@ function initMap() {
  * Fetch all neighborhoods and set their HTML.
  */
 function updateNeighborhoods() {
-  self.dbHelper
+  self.restaurantDb
     .getNeighborhoods()
     .then(neighborhoods => fillNeighborhoodFilterHtml(neighborhoods))
     .catch(console.error);
@@ -78,7 +75,7 @@ function fillNeighborhoodFilterHtml(neighborhoods) {
  * Fetch all cuisines and set their HTML.
  */
 function updateCuisines() {
-  self.dbHelper
+  self.restaurantDb
     .getCuisines()
     .then(cuisines => fillCuisineFilterHtml(cuisines))
     .catch(console.error);
@@ -112,7 +109,7 @@ function updateRestaurants() {
   const cuisine = cSelect[cIndex] ? cSelect[cIndex].value : 'all';
   const neighborhood = nSelect[nIndex] ? nSelect[nIndex].value : 'all';
 
-  self.dbHelper
+  self.restaurantDb
     .getFilteredRestaurants({ cuisine, neighborhood })
     .then(restaurants => {
       updateRestaurantInfoListHtml(restaurants);
@@ -157,7 +154,7 @@ function createRestaurantInfoItemHtml(restaurant) {
   headerDiv.append(toggleRestaurantFavoriteButton);
 
   const image = document.createElement('img');
-  const imageSources = DBHelper.getRestaurantPhotoSources(restaurant);
+  const imageSources = Helper.getRestaurantPhotoSources(restaurant);
   image.classList.add('restaurant-preview-img');
   image.setAttribute('alt', `promotional image of the restaurant "${restaurant.name}"`);
 
@@ -186,7 +183,7 @@ function createRestaurantInfoItemHtml(restaurant) {
     'View details of the restaurant "' + restaurant.name + '"';
   more.setAttribute('aria-label', description);
   more.setAttribute('title', description);
-  more.setAttribute('href', DBHelper.urlForRestaurant(restaurant));
+  more.setAttribute('href', Helper.urlForRestaurant(restaurant));
   more.classList.add('restaurant-preview-details-link');
   more.innerText = 'View Details';
   li.append(more);
@@ -205,7 +202,7 @@ function updateMapMarkers(restaurants) {
   // Add new markers
   restaurants.forEach(restaurant => {
     // Create marker for the current restaurant
-    const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
+    const marker = Helper.mapMarkerForRestaurant(restaurant, self.map);
 
     // Add marker to the list
     self.markers.push(marker);

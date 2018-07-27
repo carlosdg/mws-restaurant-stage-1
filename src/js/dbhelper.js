@@ -1,7 +1,39 @@
 /**
- * Database helper functions.
+ * Proxy class to open IndexedDB. When open is called after the first time
+ * it will return the cached promise instead of trying to open the IDB again.
  */
-class DBHelper {
+class IdbProxy {
+  /**
+   * IndexedDB database name
+   */
+  static get NAME() {
+    return 'restaurant_reviews';
+  }
+
+  /**
+   * IndexedDB database version
+   */
+  static get VERSION() {
+    return 1;
+  }
+
+  /**
+   * Returns the promise to use IDB (following Jake Archibald's idb library)
+   */
+  static open() {
+    // The first time opening IDB there will be no cached promise. 
+    // So we open it and cache the promise for future access
+    if (!IdbProxy._cachedPromise) {
+      IdbProxy._cachedPromise = idb.open(IdbProxy.NAME, IdbProxy.VERSION, db => {
+          db.createObjectStore(RestaurantsDatabase.IDB_OBJECT_STORE_NAME, { keyPath: 'id' });
+      });
+    }
+
+    return IdbProxy._cachedPromise;
+  }
+}
+
+class RestaurantsDatabase {
   /**
    * Remote database URL
    */
@@ -10,27 +42,15 @@ class DBHelper {
     return `http://localhost:${port}/restaurants`;
   }
 
-  /**
-   * IndexedDB database name
-   */
-  static get IDB_NAME() {
-    return 'restaurant_reviews';
-  }
-
-  /**
-   * IndexedDB database version
-   */
-  static get IDB_VERSION() {
-    return 1;
+  static get IDB_OBJECT_STORE_NAME() {
+    return 'restaurants';
   }
 
   /**
    */
   constructor() {
     // Connect to IDB
-    this._dbPromise = idb.open(DBHelper.IDB_NAME, DBHelper.IDB_VERSION, db =>
-      db.createObjectStore('restaurants', { keyPath: 'id' })
-    );
+    this._dbPromise = IdbProxy.open();
   }
 
   /**
@@ -39,22 +59,31 @@ class DBHelper {
   getRestaurants() {
     return this._dbPromise.then(db =>
       db
-        .transaction('restaurants')
-        .objectStore('restaurants')
+        .transaction(RestaurantsDatabase.IDB_OBJECT_STORE_NAME)
+        .objectStore(RestaurantsDatabase.IDB_OBJECT_STORE_NAME)
         .getAll()
     );
   }
 
   /**
-   * Retrieves the restaurant with the given ID from IDB
+   * Retrieves the restaurant with the given ID from IDB.
+   * If no restaurant is present it attempts to fetch it
    */
   getRestaurant(id) {
-    return this._dbPromise.then(db =>
-      db
-        .transaction('restaurants')
-        .objectStore('restaurants')
-        .get(id)
-    );
+    return this._dbPromise
+      .then(db =>
+        db
+          .transaction(RestaurantsDatabase.IDB_OBJECT_STORE_NAME)
+          .objectStore(RestaurantsDatabase.IDB_OBJECT_STORE_NAME)
+          .get(id)
+      )
+      .then(restaurant => {
+        if (restaurant) {
+          return restaurant;
+        } else {
+          return this.updateRestaurant(id);
+        }
+      });
   }
 
   getNeighborhoods() {
@@ -112,14 +141,16 @@ class DBHelper {
    * database and update IDB.
    *
    * @returns {Promise} A promise that resolves with this instance
-   *                    of DBHelper once IDB has been updated.
+   *                    of RestaurantsDatabase once IDB has been updated.
    *                    Or rejects with an error
    */
   updateRestaurants() {
-    return fetch(DBHelper.REMOTE_DATABASE_URL)
+    return fetch(RestaurantsDatabase.REMOTE_DATABASE_URL)
       .then(response => response.json())
-      .then(restaurants => this._updateRestaurants(restaurants))
-      .then(_ => this);
+      .then(restaurants => {
+        this._updateRestaurants(restaurants);
+        return restaurants;
+      });
   }
 
   /**
@@ -127,14 +158,16 @@ class DBHelper {
    * database and update IDB.
    *
    * @returns {Promise} A promise that resolves with this instance
-   *                    of DBHelper once IDB has been updated.
+   *                    of RestaurantsDatabase once IDB has been updated.
    *                    Or rejects with an error
    */
   updateRestaurant(id) {
-    return fetch(DBHelper.REMOTE_DATABASE_URL + '/' + id)
+    return fetch(RestaurantsDatabase.REMOTE_DATABASE_URL + '/' + id)
       .then(response => response.json())
-      .then(restaurant => this._updateRestaurants([restaurant]))
-      .then(_ => this);
+      .then(restaurant => {
+        this._updateRestaurants([restaurant]);
+        return restaurant;
+      });
   }
 
   /**
@@ -148,7 +181,12 @@ class DBHelper {
       restaurants.forEach(restaurant => store.put(restaurant));
     });
   }
+}
 
+/**
+ * Helper functions.
+ */
+class Helper {
   /**
    * Restaurant page URL.
    */
@@ -214,7 +252,7 @@ class DBHelper {
       {
         title: restaurant.name,
         alt: restaurant.name,
-        url: DBHelper.urlForRestaurant(restaurant)
+        url: Helper.urlForRestaurant(restaurant)
       }
     );
     marker.addTo(map);
@@ -230,12 +268,14 @@ class FavoriteButton {
    */
   constructor(buttonElement, isFavorite) {
     if (buttonElement) {
-      this.domButton = buttonElement
+      this.domButton = buttonElement;
     } else {
       this.domButton = FavoriteButton.createElement();
     }
 
-    if (isFavorite) { this.updateState(); }
+    if (isFavorite) {
+      this.updateState();
+    }
   }
 
   addEventListener(event, listener) {
@@ -253,15 +293,15 @@ class FavoriteButton {
     if (isFavorite) {
       this.domButton.classList.remove('favorite');
       this.domButton.setAttribute('title', FavoriteButton.ADD_LABEL);
-      this.domButton.setAttribute('aria-label', FavoriteButton.ADD_LABEL);  
+      this.domButton.setAttribute('aria-label', FavoriteButton.ADD_LABEL);
     } else {
       this.domButton.classList.add('favorite');
       this.domButton.setAttribute('title', FavoriteButton.REMOVE_LABEL);
       this.domButton.setAttribute('aria-label', FavoriteButton.REMOVE_LABEL);
-    }  
+    }
   }
 
-  get domElement() {
+  get domElement() {
     return this.domButton;
   }
 

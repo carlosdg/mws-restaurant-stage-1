@@ -1,19 +1,21 @@
-let dbHelper;
+let restaurantsDb;
 var map;
 
 /**
  * Initialize map as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', _ => {
-  self.dbHelper = new DBHelper();
+  self.restaurantsDb = new RestaurantsDatabase();
 
   fetchRestaurantFromUrl()
     .then(restaurant => {
       fillBreadcrumb(restaurant);
       fillRestaurantHtml(restaurant);
-      initMap(restaurant);
-      DBHelper.mapMarkerForRestaurant(restaurant, self.map);
+      fillRestaurantHoursHtml(restaurant.operating_hours);
+      fillReviewsHtml(restaurant.reviews);
       addFavoriteBehaviour(restaurant);
+      initMap(restaurant);
+      Helper.mapMarkerForRestaurant(restaurant, self.map);
     })
     .catch(console.error);
 });
@@ -53,22 +55,9 @@ function fetchRestaurantFromUrl() {
     throw 'Unknown id in URL';
   }
 
-  return self.dbHelper.getRestaurant(id).then(restaurant => {
-    if (restaurant) {
-      return restaurant;
-    }
-
-    // Try to update IDB and then look if we have the restaurant
-    return self.dbHelper
-      .updateRestaurant(id)
-      .then(_ => self.dbHelper.getRestaurant(id))
-      .then(restaurant => {
-        if (!restaurant) {
-          throw 'Missing data for restaurant';
-        }
-
-        return restaurant;
-      });
+  return self.restaurantsDb.getRestaurant(id).then(restaurant => {
+    if (restaurant) { return restaurant; }
+    else { throw new Error('Missing data for restaurant'); }
   });
 }
 
@@ -83,7 +72,7 @@ function fillRestaurantHtml(restaurant) {
   address.innerText = restaurant.address;
 
   const image = document.getElementById('restaurant-img');
-  const imageSources = DBHelper.getRestaurantPhotoSources(restaurant);
+  const imageSources = Helper.getRestaurantPhotoSources(restaurant);
   image.className = 'restaurant-img';
   image.setAttribute('alt', `promotional image of the restaurant "${restaurant.name}"`);
 
@@ -106,9 +95,6 @@ function fillRestaurantHtml(restaurant) {
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerText = restaurant.cuisine_type;
-
-  fillRestaurantHoursHtml(restaurant.operating_hours);
-  fillReviewsHtml(restaurant.reviews);
 }
 
 /**
