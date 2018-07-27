@@ -1,21 +1,32 @@
-let restaurantsDb;
-var map;
-
 /**
  * Initialize map as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', _ => {
-  self.restaurantsDb = new RestaurantsDatabase();
+  const restaurantsDb = new RestaurantsDatabase();
+  const reviewsDb = new ReviewsDatabase();
+  const restaurantId = parseInt(getParameterByName('id'), 10);
 
-  fetchRestaurantFromUrl()
+  if (isNaN(restaurantId)) { throw 'Unknown id in URL'; }
+
+  restaurantsDb
+    .getRestaurant(restaurantId)
     .then(restaurant => {
+      if (restaurant) { return restaurant; }
+      else { throw new Error('Missing data for restaurant'); }
+    })
+    .then(restaurant => {
+      initMap(restaurant);
       fillBreadcrumb(restaurant);
       fillRestaurantHtml(restaurant);
-      fillRestaurantHoursHtml(restaurant.operating_hours);
-      fillReviewsHtml(restaurant.reviews);
       addFavoriteBehaviour(restaurant);
-      initMap(restaurant);
-      Helper.mapMarkerForRestaurant(restaurant, self.map);
+      fillRestaurantHoursHtml(restaurant.operating_hours);
+      reviewsDb
+        .getReviews(restaurantId)
+        .then(reviews => fillReviewsHtml(reviews))
+        .catch(error => {
+          fillReviewsHtml();
+          throw error;
+        })
     })
     .catch(console.error);
 });
@@ -24,7 +35,7 @@ document.addEventListener('DOMContentLoaded', _ => {
  * Initialize leaflet map
  */
 function initMap(restaurant) {
-  self.map = L.map('map', {
+  const map = L.map('map', {
     center: [restaurant.latlng.lat, restaurant.latlng.lng],
     zoom: 16,
     scrollWheelZoom: false
@@ -43,22 +54,8 @@ function initMap(restaurant) {
       id: 'mapbox.streets'
     }
   ).addTo(map);
-}
 
-/**
- * Get current restaurant from page URL.
- */
-function fetchRestaurantFromUrl() {
-  const id = parseInt(getParameterByName('id'), 10);
-
-  if (isNaN(id)) {
-    throw 'Unknown id in URL';
-  }
-
-  return self.restaurantsDb.getRestaurant(id).then(restaurant => {
-    if (restaurant) { return restaurant; }
-    else { throw new Error('Missing data for restaurant'); }
-  });
+  Helper.mapMarkerForRestaurant(restaurant, map);
 }
 
 /**
@@ -156,7 +153,7 @@ function createReviewHtml(review) {
   li.appendChild(rating);
 
   const date = document.createElement('p');
-  date.innerHTML = `<strong>Date:</strong> ${review.date}`;
+  date.innerHTML = `<strong>Date:</strong> ${new Date(review.updatedAt).toUTCString()}`;
   date.classList.add('review-date');
   li.appendChild(date);
 
