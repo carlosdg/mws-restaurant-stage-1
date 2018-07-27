@@ -211,24 +211,13 @@ function getParameterByName(name, url) {
 }
 
 function addFavoriteBehaviour(restaurant) {
-  const ADD_TO_FAVORITES_LABEL = 'Add restaurant to favorites';
-  const REMOVE_FROM_FAVORITES_LABEL = 'Remove restaurant from favorites';
+  const domButton = document.querySelector('#restaurant-container .favorite-btn');
+  const addFavoriteBtn = new FavoriteButton(domButton, restaurant.is_favorite);
 
-  const addFavoriteBtn = document.querySelector('#restaurant-container button');
   addFavoriteBtn.addEventListener('click', addRestaurantToFavorites);
   addFavoriteBtn.addEventListener('touch', addRestaurantToFavorites);
 
   function addRestaurantToFavorites() {
-    // Add/remove favorite class
-    addFavoriteBtn.classList.toggle('favorite');
-
-    // Update the label and title to say add or remove
-    if (addFavoriteBtn.classList.contains('favorite')) {
-      addFavoriteBtn.setAttribute('aria-label', REMOVE_FROM_FAVORITES_LABEL);
-      addFavoriteBtn.setAttribute('title', REMOVE_FROM_FAVORITES_LABEL);
-    } else {
-      addFavoriteBtn.setAttribute('aria-label', ADD_TO_FAVORITES_LABEL);
-      addFavoriteBtn.setAttribute('title', ADD_TO_FAVORITES_LABEL);
-    }
+    // TODO: update DB
   }
 }
