@@ -2,6 +2,7 @@ const gulp = require('gulp');
 const imagemin = require('gulp-imagemin');
 const babel = require('gulp-babel');
 const uglify = require('gulp-uglify');
+const concat = require('gulp-concat');
 const cssnano = require('gulp-cssnano');
 const autoprefixer = require('gulp-autoprefixer');
 const htmlmin = require('gulp-htmlmin');
@@ -69,20 +70,18 @@ gulp.task('dist-html', function() {
  */
 gulp.task('dist-scripts', function() {
   gulp
-    .src('src/**/*.js')
+    .src('src/js/utils/**/*.js')
+    .pipe(concat('utils.js'))
     .pipe(
-      babel({
-        presets: [
-          [
-            'env',
-            {
-              targets: {
-                browsers: [browsers]
-              }
-            }
-          ]
-        ]
-      })
+      babel({ presets: [ [ 'env', { targets: { browsers: [browsers] } } ] ] })
+    )
+    .pipe(uglify())
+    .pipe(gulp.dest('dist/js'));
+
+  gulp
+    .src(['src/**/*.js', '!src/js/utils/**/*.js'])
+    .pipe(
+      babel({ presets: [ [ 'env', { targets: { browsers: [browsers] } } ] ] })
     )
     .pipe(uglify())
     .pipe(gulp.dest('dist'));
