@@ -340,17 +340,17 @@ footer {
 }
 
 /* Styles for the favorite button */
-.favorite-btn svg {
-  width: 2rem;
-  height: 2rem;
+.favorite-btn span {
+  display: inline-block;
+  font-size: 2rem;
   transform: scale(0.8) rotate(0);
   transition: all 0.3s ease-in-out;
 }
-.favorite-btn:hover > svg {
+.favorite-btn:hover > span {
   transform: scale(1) rotate(360deg);
 }
-.favorite-btn.favorite > svg {
-  fill: #daa520;
+.favorite-btn.favorite > span {
+  color: #daa520;
 }
 
 /* Styles for the reviews */
