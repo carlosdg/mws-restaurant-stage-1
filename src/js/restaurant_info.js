@@ -27,6 +27,8 @@ document.addEventListener('DOMContentLoaded', _ => {
           fillReviewsHtml();
           throw error;
         })
+        .then(_ => reviewsDb.updateReviews(restaurantId))
+        .then(reviews => fillReviewsHtml(reviews))
     })
     .catch(console.error);
 });
@@ -122,9 +124,6 @@ function fillRestaurantHoursHtml(operatingHours) {
  */
 function fillReviewsHtml(reviews) {
   const container = document.getElementById('reviews-container');
-  const title = document.createElement('h2');
-  title.innerHTML = 'Reviews';
-  container.appendChild(title);
 
   if (!reviews) {
     const noReviews = document.createElement('p');
@@ -134,10 +133,8 @@ function fillReviewsHtml(reviews) {
   }
 
   const ul = document.getElementById('reviews-list');
-  reviews.forEach(review => {
-    ul.appendChild(createReviewHtml(review));
-  });
-  container.appendChild(ul);
+  ul.innerHTML = '';
+  reviews.forEach(review => ul.appendChild(createReviewHtml(review)));
 }
 
 /**
