@@ -11,7 +11,7 @@ class FavoriteButton {
       this.domButton = FavoriteButton.createElement();
     }
 
-    if (isFavorite) {
+    if (isFavorite === true || isFavorite === 'true') {
       this.updateState();
     }
   }
