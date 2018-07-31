@@ -27,6 +27,7 @@ class IdbProxy {
       IdbProxy._cachedPromise = idb.open(IdbProxy.NAME, IdbProxy.VERSION, db => {
           db.createObjectStore(RestaurantsDatabase.IDB_OBJECT_STORE_NAME, { keyPath: 'id' });
           db.createObjectStore(ReviewsDatabase.IDB_OBJECT_STORE_NAME, { keyPath: 'restaurantId' });
+          db.createObjectStore(PendingRequestsDatabase.IDB_OBJECT_STORE_NAME, { keyPath: 'id', autoIncrement: true });
       });
     }
 
