@@ -32,7 +32,7 @@ class RestaurantsDatabase {
 
   /**
    * Retrieves the restaurant with the given ID from IDB.
-   * If no restaurant is present it attempts to fetch it
+
    */
   getRestaurant(id) {
     return this._dbPromise
@@ -42,13 +42,13 @@ class RestaurantsDatabase {
           .objectStore(RestaurantsDatabase.IDB_OBJECT_STORE_NAME)
           .get(id)
       )
-      .then(restaurant => {
-        if (restaurant) {
-          return restaurant;
-        } else {
-          return this.updateRestaurant(id);
-        }
-      });
+      // .then(restaurant => {
+      //   if (restaurant) {
+      //     return restaurant;
+      //   } else {
+      //     return this.updateRestaurant(id);
+      //   }
+      // });
   }
 
   getNeighborhoods() {

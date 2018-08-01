@@ -54,11 +54,13 @@ class PendingRequestsDatabase {
     this._dbPromise = IdbProxy.open();
 
     // Try to send any pending request in IDB (if any)
-    this._sendAllPendingRequests().then(promises => Promise.all(promises));
-    
-    // Register event listener so every time the user goes online
-    // we try to send all pending requests
-    window.addEventListener("online", this._sendAllPendingRequests);
+    this._sendAllPendingRequests()
+      .then(promises => Promise.all(promises))
+      .finally(() => {
+        // Register event listener so every time the user goes online
+        // we try to send all pending requests
+        window.addEventListener("online", this._sendAllPendingRequests);
+      })
   }
 
   /**

@@ -1,63 +1,81 @@
+let map = null;
+let favoriteBtn = null;
+let pendingRequestsDb = null;
+
 /**
  * Initialize map as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', _ => {
+  self.pendingRequestsDb =  PendingRequestsDatabaseProxy.open();
+
   const restaurantsDb = new RestaurantsDatabase();
   const reviewsDb = new ReviewsDatabase();
   const restaurantId = parseInt(getParameterByName('id'), 10);
 
   if (isNaN(restaurantId)) { throw 'Unknown id in URL'; }
 
+  // Get restaurant from IDB to put something in the HTML so the user can see immediately.
+  // Then request the restaurant from the remote Database to update the data and update the app
   restaurantsDb
     .getRestaurant(restaurantId)
-    .then(restaurant => {
-      if (restaurant) { return restaurant; }
-      else { throw new Error('Missing data for restaurant'); }
+    .then(restaurant => updateAppHtml(restaurant))
+    .catch(error => console.error('Error using IDB restaurants', error))
+    .then(() => restaurantsDb.updateRestaurant(restaurantId))
+    .then(restaurant => updateAppHtml(restaurant))
+    .catch(error => console.error('Error updating restaurants', error))
+
+  // Get reviews from IDB. Then update IDB and 
+  // show the updated reviews
+  reviewsDb
+    .getReviews(restaurantId)
+    .then(reviews => fillReviewsHtml(reviews))
+    .catch(error => {
+      fillReviewsHtml();
+      throw error;
     })
-    .then(restaurant => {
-      initMap(restaurant);
-      fillBreadcrumb(restaurant);
-      fillRestaurantHtml(restaurant);
-      addFavoriteBehaviour(restaurant);
-      fillRestaurantHoursHtml(restaurant.operating_hours);
-      reviewsDb
-        .getReviews(restaurantId)
-        .then(reviews => fillReviewsHtml(reviews))
-        .catch(error => {
-          fillReviewsHtml();
-          throw error;
-        })
-        .then(_ => reviewsDb.updateReviews(restaurantId))
-        .then(reviews => fillReviewsHtml(reviews))
-    })
+    .then(_ => reviewsDb.updateReviews(restaurantId))
+    .then(reviews => fillReviewsHtml(reviews))
     .catch(console.error);
 });
+
+/**
+ * Init or update the page HTML
+ */
+function updateAppHtml(restaurant) {
+  initMap(restaurant);
+  initFavoriteButton(restaurant);
+  fillBreadcrumb(restaurant);
+  fillRestaurantHtml(restaurant);
+  fillRestaurantHoursHtml(restaurant.operating_hours);
+}
 
 /**
  * Initialize leaflet map
  */
 function initMap(restaurant) {
-  const map = L.map('map', {
-    center: [restaurant.latlng.lat, restaurant.latlng.lng],
-    zoom: 16,
-    scrollWheelZoom: false
-  });
+  if (!self.map) {
+    self.map = L.map('map', {
+      center: [restaurant.latlng.lat, restaurant.latlng.lng],
+      zoom: 16,
+      scrollWheelZoom: false
+    });
 
-  L.tileLayer(
-    'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={accessToken}',
-    {
-      accessToken:
-        'pk.eyJ1IjoiY2FybG9zLWRvbWluZ3VleiIsImEiOiJjampvOWE0ZnIxNnd3M3Zyc3pxM2ZnNHJkIn0.y4purOXmeN0qCA2vW4etCg',
-      maxZoom: 18,
-      attribution:
-        'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-        '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-        'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-      id: 'mapbox.streets'
-    }
-  ).addTo(map);
+    L.tileLayer(
+      'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={accessToken}',
+      {
+        accessToken:
+          'pk.eyJ1IjoiY2FybG9zLWRvbWluZ3VleiIsImEiOiJjampvOWE0ZnIxNnd3M3Zyc3pxM2ZnNHJkIn0.y4purOXmeN0qCA2vW4etCg',
+        maxZoom: 18,
+        attribution:
+          'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+          '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+          'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        id: 'mapbox.streets'
+      }
+    ).addTo(self.map);
 
-  Helper.mapMarkerForRestaurant(restaurant, map);
+    Helper.mapMarkerForRestaurant(restaurant, self.map);
+  }
 }
 
 /**
@@ -75,7 +93,6 @@ function fillRestaurantHtml(restaurant) {
   image.className = 'restaurant-img';
   image.setAttribute('alt', `promotional image of the restaurant "${restaurant.name}"`);
 
-  // image.setAttribute('src', imageSources[0].url);
   // Small image to load something super fast (same image as favicon)
   image.setAttribute('src', 'img/icons/icon16.png');
 
@@ -101,6 +118,8 @@ function fillRestaurantHtml(restaurant) {
  */
 function fillRestaurantHoursHtml(operatingHours) {
   const hours = document.getElementById('restaurant-hours');
+  hours.innerHTML = '';
+
   for (let key in operatingHours) {
     const row = document.createElement('tr');
 
@@ -172,8 +191,19 @@ function createReviewHtml(review) {
  */
 function fillBreadcrumb(restaurant) {
   const breadcrumb = document.getElementById('breadcrumb');
+  breadcrumb.innerHTML = '';
+  
+  const homeLi = document.createElement('li');
+  const homeLink = document.createElement('a');
+  homeLink.innerText = 'Home';
+  homeLink.setAttribute('href', '/');
+  homeLink.classList.add('inline-link');
+
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;
+
+  homeLi.appendChild(homeLink);
+  breadcrumb.appendChild(homeLi);
   breadcrumb.appendChild(li);
 }
 
@@ -190,14 +220,24 @@ function getParameterByName(name, url) {
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
-function addFavoriteBehaviour(restaurant) {
-  const domButton = document.querySelector('#restaurant-container .favorite-btn');
-  const addFavoriteBtn = new FavoriteButton(domButton, restaurant.is_favorite);
-
-  addFavoriteBtn.addEventListener('click', addRestaurantToFavorites);
-  addFavoriteBtn.addEventListener('touch', addRestaurantToFavorites);
-
-  function addRestaurantToFavorites() {
-    // TODO: update DB
+function initFavoriteButton(restaurant) {
+  // If this is the first time calling the function it will initialize the
+  // button. If this is not the first time, it will just update the state
+  // of the button
+  if (!self.favoriteBtn) {
+    const domButton = document.querySelector('#restaurant-container .favorite-btn');
+    self.favoriteBtn = new FavoriteButton(domButton, restaurant.is_favorite);
+  
+    self.favoriteBtn.addEventListener('click', addRestaurantToFavorites);
+    self.favoriteBtn.addEventListener('touch', addRestaurantToFavorites);
+  
+    function addRestaurantToFavorites() {
+      self.pendingRequestsDb.registerRequest({
+        url: `http://localhost:1337/restaurants/${restaurant.id}/?is_favorite=${self.favoriteBtn.isFavorite}`, 
+        options: { method: 'PUT' }
+      });
+    }
+  } else {
+    self.favoriteBtn.setState(restaurant.is_favorite);
   }
 }

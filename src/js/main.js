@@ -1,4 +1,5 @@
 let restaurantDb;
+let pendingRequestsDb;
 var map;
 var markers = [];
 
@@ -10,6 +11,7 @@ var markers = [];
  */
 document.addEventListener('DOMContentLoaded', _ => {
   self.restaurantDb = new RestaurantsDatabase();
+  pendingRequestsDb = PendingRequestsDatabaseProxy.open();
   initMap();
   main();
 
@@ -222,7 +224,10 @@ function createToggleFavoriteButton(restaurant) {
   btn.addEventListener('touch', addRestaurantToFavorites);
 
   function addRestaurantToFavorites() {
-    // TODO: update DB
+    self.pendingRequestsDb.registerRequest({
+      url: `http://localhost:1337/restaurants/${restaurant.id}/?is_favorite=${btn.isFavorite}`, 
+      options: { method: 'PUT' }
+    });
   }
 
   return btn.domButton;

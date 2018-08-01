@@ -4,16 +4,14 @@ class FavoriteButton {
    * If no element is passed, a new element is created.
    * The initial state can also be determined by the isFavorite parameter
    */
-  constructor(buttonElement, isFavorite) {
+  constructor(buttonElement, initAsFavorite = false) {
     if (buttonElement) {
       this.domButton = buttonElement;
     } else {
       this.domButton = FavoriteButton.createElement();
     }
 
-    if (isFavorite === true || isFavorite === 'true') {
-      this.updateState();
-    }
+    this.setState(initAsFavorite);
   }
 
   addEventListener(event, listener) {
@@ -26,17 +24,25 @@ class FavoriteButton {
   }
 
   updateState() {
-    const isFavorite = this.domButton.classList.contains('favorite');
+    // If now is favorite after update it won't
+    // If now is not favorite after update it will
+    this.setState(!this.isFavorite);
+  }
 
-    if (isFavorite) {
-      this.domButton.classList.remove('favorite');
-      this.domButton.setAttribute('title', FavoriteButton.ADD_LABEL);
-      this.domButton.setAttribute('aria-label', FavoriteButton.ADD_LABEL);
-    } else {
+  setState(isFavorite) {
+    if (isFavorite === true || isFavorite === 'true') {
       this.domButton.classList.add('favorite');
       this.domButton.setAttribute('title', FavoriteButton.REMOVE_LABEL);
       this.domButton.setAttribute('aria-label', FavoriteButton.REMOVE_LABEL);
+    } else {
+      this.domButton.classList.remove('favorite');
+      this.domButton.setAttribute('title', FavoriteButton.ADD_LABEL);
+      this.domButton.setAttribute('aria-label', FavoriteButton.ADD_LABEL);
     }
+  }
+
+  get isFavorite() {
+    return this.domButton.classList.contains('favorite');
   }
 
   get domElement() {
