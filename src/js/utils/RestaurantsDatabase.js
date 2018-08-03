@@ -1,3 +1,8 @@
+/**
+ * Used to retrieve Restaurant data from IndexedDB and
+ * to update the restaurant data at IndexedDB from the
+ * remote server
+ */
 class RestaurantsDatabase {
   /**
    * Remote database URL
@@ -7,12 +12,13 @@ class RestaurantsDatabase {
     return `http://localhost:${port}/restaurants`;
   }
 
+  /**
+   * IndexedDB restaurants object store
+   */
   static get IDB_OBJECT_STORE_NAME() {
     return 'restaurants';
   }
 
-  /**
-   */
   constructor() {
     // Connect to IDB
     this._dbPromise = IdbProxy.open();
@@ -32,7 +38,6 @@ class RestaurantsDatabase {
 
   /**
    * Retrieves the restaurant with the given ID from IDB.
-
    */
   getRestaurant(id) {
     return this._dbPromise
@@ -42,13 +47,6 @@ class RestaurantsDatabase {
           .objectStore(RestaurantsDatabase.IDB_OBJECT_STORE_NAME)
           .get(id)
       )
-      // .then(restaurant => {
-      //   if (restaurant) {
-      //     return restaurant;
-      //   } else {
-      //     return this.updateRestaurant(id);
-      //   }
-      // });
   }
 
   getNeighborhoods() {
@@ -104,10 +102,6 @@ class RestaurantsDatabase {
   /**
    * Tries to fetch restaurant information from the remote
    * database and update IDB.
-   *
-   * @returns {Promise} A promise that resolves with this instance
-   *                    of RestaurantsDatabase once IDB has been updated.
-   *                    Or rejects with an error
    */
   updateRestaurants() {
     return fetch(RestaurantsDatabase.REMOTE_DATABASE_URL)
@@ -121,10 +115,6 @@ class RestaurantsDatabase {
   /**
    * Tries to fetch restaurant information from the remote
    * database and update IDB.
-   *
-   * @returns {Promise} A promise that resolves with this instance
-   *                    of RestaurantsDatabase once IDB has been updated.
-   *                    Or rejects with an error
    */
   updateRestaurant(id) {
     return fetch(RestaurantsDatabase.REMOTE_DATABASE_URL + '/' + id)
