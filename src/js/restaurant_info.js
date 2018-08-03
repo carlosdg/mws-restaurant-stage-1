@@ -22,21 +22,18 @@ document.addEventListener('DOMContentLoaded', _ => {
     .then(restaurant => updateAppHtml(restaurant))
     .catch(error => console.error('Error using IDB restaurants', error))
     .then(() => restaurantsDb.updateRestaurant(restaurantId))
-    .then(restaurant => updateAppHtml(restaurant))
-    .catch(error => console.error('Error updating restaurants', error))
+    .then(updatedRestaurant => updateAppHtml(updatedRestaurant))
+    .catch(error => console.error('Error using updated restaurants', error));
 
   // Get reviews from IDB. Then update IDB and 
   // show the updated reviews
   reviewsDb
     .getReviews(restaurantId)
     .then(reviews => fillReviewsHtml(reviews))
-    .catch(error => {
-      fillReviewsHtml();
-      throw error;
-    })
-    .then(_ => reviewsDb.updateReviews(restaurantId))
-    .then(reviews => fillReviewsHtml(reviews))
-    .catch(console.error);
+    .catch(error => console.error('Error using IDB reviews', error))
+    .then(() => reviewsDb.updateReviews(restaurantId))
+    .then(updatedReviews => fillReviewsHtml(updatedReviews))
+    .catch(error => console.error('Error using updated reviews', error));
 
   // Add the submit event listener to the review form
   addReviewSubmitEventListener(restaurantId);
@@ -147,18 +144,14 @@ function fillRestaurantHoursHtml(operatingHours) {
  * Create all reviews HTML and add them to the webpage.
  */
 function fillReviewsHtml(reviews) {
-  const container = document.getElementById('reviews-container');
+  const ul = document.getElementById('reviews-list');
 
   if (!reviews) {
-    const noReviews = document.createElement('p');
-    noReviews.innerHTML = 'No reviews yet!';
-    container.appendChild(noReviews);
-    return;
+    ul.innerHTML = 'No reviews yet!';
+  } else {
+    ul.innerHTML = '';
+    reviews.forEach(review => ul.appendChild(createReviewHtml(review)));
   }
-
-  const ul = document.getElementById('reviews-list');
-  ul.innerHTML = '';
-  reviews.forEach(review => ul.appendChild(createReviewHtml(review)));
 }
 
 /**
