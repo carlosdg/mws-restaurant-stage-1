@@ -36,6 +36,10 @@ document.addEventListener('DOMContentLoaded', _ => {
     .then(_ => reviewsDb.updateReviews(restaurantId))
     .then(reviews => fillReviewsHtml(reviews))
     .catch(console.error);
+
+  // Add the submit event listener to the review form
+  addReviewSubmitEventListener(restaurantId);
+
 });
 
 /**
@@ -240,4 +244,31 @@ function initFavoriteButton(restaurant) {
   } else {
     self.favoriteBtn.setState(restaurant.is_favorite);
   }
+}
+
+function addReviewSubmitEventListener(restaurantId) {
+  // Review UL DOM element to append new reviews. This is so the user has
+  // instant feedback
+  const reviewList = document.getElementById('reviews-list');
+
+  // Add event listener to the form
+  document.getElementById('form-submit-review').addEventListener('submit', event => {
+    event.preventDefault();
+
+    const form = event.target;
+    const reviewInfo = {
+      restaurant_id: restaurantId,
+      name: form['input-name'].value,
+      rating: parseInt(form['select-rating'].value, 10),
+      comments: form['textarea-review'].value,
+      updatedAt: Date.now()
+    };
+
+    self.pendingRequestsDb.registerRequest({
+      url: `http://localhost:1337/reviews/`, 
+      options: { method: 'POST', body: JSON.stringify(reviewInfo) }
+    });
+
+    reviewList.appendChild(createReviewHtml(reviewInfo));
+  })
 }
