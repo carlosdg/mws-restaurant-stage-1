@@ -77,6 +77,35 @@
       </div>
     </section>
 
+    <!-- Add review -->
+    <section class="container">
+      <h2>Send Review</h2>
+      <form action="/" method="POST" class="form-submit-review">
+        <label>
+          <div>Rating:</div>
+          <select name="select-rating">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </label>
+
+        <label>
+          <div>Name:</div>
+          <input type="text" name="input-name" required="required" placeholder="John Snow" title="Name to show as the review author" maxlength="100">
+        </label>
+
+        <label>
+          <div>Comment:</div>
+          <textarea id="textarea-review" name="textarea-review" required="required" placeholder="I think that this place is..."></textarea>
+        </label>
+
+        <button type="submit">Send Review</button>
+      </form>
+    </section>
+
     <!-- Reviews -->
     <section id="reviews-container" class="container">
       <h2>Reviews</h2>

@@ -395,3 +395,44 @@ footer {
     order: 1;
   }
 }
+
+/* Styles for the review form */
+.form-submit-review label {
+  display: block;
+  margin: 0.5rem;
+}
+.form-submit-review label:first-child {
+  display: flex;
+  align-items: center;
+}
+.form-submit-review input,
+.form-submit-review select,
+.form-submit-review button,
+.form-submit-review textarea {
+  font-size: inherit;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid black;
+}
+.form-submit-review select {
+  min-width: 2.3rem;
+  margin-left: 0.5rem;
+}
+.form-submit-review input {
+  min-width: 100%;
+}
+.form-submit-review textarea {
+  min-height: 10rem;
+  min-width: 100%;
+}
+.form-submit-review button {
+  min-width: 100%;
+  border: 1px solid black;
+  transition: opacity 0.3s, box-shadow 0.3s;
+}
+.form-submit-review button:hover,
+.form-submit-review button:focus {
+  opacity: 0.8;
+  box-shadow: 0px 9px 5px -7px #333;
+}
