@@ -6,6 +6,7 @@ let pendingRequestsDb = null;
  * Initialize map as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', _ => {
+  Helper.registerServiceWorker();
   self.pendingRequestsDb =  PendingRequestsDatabaseProxy.open();
 
   const restaurantsDb = new RestaurantsDatabase();

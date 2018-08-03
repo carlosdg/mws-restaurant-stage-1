@@ -166,16 +166,6 @@
     toggleScheduleExpandButton.addEventListener('click', toggleScheduleExpand)
     toggleScheduleExpandButton.addEventListener('touchstart', toggleScheduleExpand)
   </script>
-  <!-- Service worker registration -->
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator
-        .serviceWorker
-        .register('service_worker.js')
-        .then(reg => console.log('Registration success', reg))
-        .catch(error => console.error('Error', error))
-    }
-  </script>
 </body>
 
 </html>

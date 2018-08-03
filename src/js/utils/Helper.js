@@ -3,6 +3,21 @@
  */
 class Helper {
   /**
+   * Register a service worker controlling the root
+   */
+  static registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+      return navigator
+        .serviceWorker
+        .register('service_worker.js')
+        .then(reg => console.log('Registration success', reg))
+        .catch(error => console.error('Error', error))
+    } else {
+      return null;
+    }
+  }
+
+  /**
    * Restaurant page URL.
    */
   static urlForRestaurant(restaurant) {

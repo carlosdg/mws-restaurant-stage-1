@@ -10,6 +10,7 @@ var markers = [];
  *  - Fetch new data from the remote server to update IDB and update the application
  */
 document.addEventListener('DOMContentLoaded', _ => {
+  Helper.registerServiceWorker();
   self.restaurantDb = new RestaurantsDatabase();
   pendingRequestsDb = PendingRequestsDatabaseProxy.open();
   initMap();
