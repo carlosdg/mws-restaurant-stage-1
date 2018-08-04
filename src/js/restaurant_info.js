@@ -2,18 +2,19 @@ let map = null;
 let favoriteBtn = null;
 let pendingRequestsDb = null;
 
-/**
- * Initialize map as soon as the page is loaded.
- */
-document.addEventListener('DOMContentLoaded', _ => {
+document.addEventListener('DOMContentLoaded', () => {
   Helper.registerServiceWorker();
-  self.pendingRequestsDb =  PendingRequestsDatabaseProxy.open();
 
+  // Get ID of this restaurant
+  const restaurantId = parseInt(getParameterByName('id'), 10);
+  if (isNaN(restaurantId)) { throw 'Unknown id in URL'; }
+
+  // Initialize databases. PendingRequestsDatabaseProxy.open() also
+  // tries to update the remote server with pending requests that may
+  // be in IndexedDB
+  self.pendingRequestsDb =  PendingRequestsDatabaseProxy.open();
   const restaurantsDb = new RestaurantsDatabase();
   const reviewsDb = new ReviewsDatabase();
-  const restaurantId = parseInt(getParameterByName('id'), 10);
-
-  if (isNaN(restaurantId)) { throw 'Unknown id in URL'; }
 
   // Get restaurant from IDB to put something in the HTML so the user can see immediately.
   // Then request the restaurant from the remote Database to update the data and update the app
@@ -185,7 +186,7 @@ function createReviewHtml(review) {
 }
 
 /**
- * Add restaurant name to the breadcrumb navigation menu
+ * Fill the breadcrumb navigation menu
  */
 function fillBreadcrumb(restaurant) {
   const breadcrumb = document.getElementById('breadcrumb');
