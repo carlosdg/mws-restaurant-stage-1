@@ -4,7 +4,7 @@
   "description": "Udacity Mobile Web Nanodegree Project",
   "main": "src/index.html",
   "scripts": {
-    "start": "npm run build && http-server dist",
+    "start": "http-server dist",
     "dev": "gulp",
     "build": "gulp dist"
   },

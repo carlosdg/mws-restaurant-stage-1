@@ -1,0 +1,18 @@
+version: "3"
+services:
+  builder:
+    build: .
+    image: "mws-builder"
+    volumes: 
+      - ".:/app"
+    environment:
+      MODE: 'production'
+
+  server:
+    image: "nginx"
+    depends_on:
+      - builder
+    ports:
+      - "8080:80"
+    volumes: 
+      - "./dist:/usr/share/nginx/html:ro"
