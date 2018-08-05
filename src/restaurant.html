@@ -6,9 +6,7 @@
   <link rel="preload" as="style" href="css/styles.css">
   <link rel="preload" as="style" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css">
   <link rel="preload" as="script" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js">
-  <link rel="preload" as="script" href="js/jake_archibald_idb.js">
-  <link rel="preload" as="script" href="js/utils.js">
-  <link rel="preload" as="script" href="js/restaurant_info.js">
+  <link rel="preload" as="script" href="restaurant.js">
 
   <!-- Notify the browser that we will need to connect to this host -->
   <link rel="preconnect" href="https://api.tiles.mapbox.com">
@@ -94,7 +92,8 @@
 
         <label>
           <div>Name:</div>
-          <input type="text" name="input-name" required="required" placeholder="John Snow" title="Name to show as the review author" maxlength="100">
+          <input type="text" name="input-name" required="required" placeholder="John Snow" title="Name to show as the review author"
+            maxlength="100">
         </label>
 
         <label>
@@ -124,12 +123,8 @@
   <!-- Leaflet script -->
   <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw=="
     crossorigin=""></script>
-  <!-- Indexed DB promised (Jake Archibald library) -->
-  <script src="js/jake_archibald_idb.js"></script>
-  <!-- Database helpers and other utils -->
-  <script src="js/utils.js"></script>
   <!-- Main javascript file -->
-  <script src="js/restaurant_info.js"></script>
+  <script src="restaurant.js"></script>
   <!-- Script for sticky breadcrumb and expand schedule -->
   <script>
     const nav = document.querySelector('.breadcrumb-nav');

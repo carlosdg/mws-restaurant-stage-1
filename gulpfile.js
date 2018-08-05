@@ -1,26 +1,13 @@
 const gulp = require('gulp');
+const webpack = require('webpack');
+const webpackStream = require('webpack-stream');
 const imagemin = require('gulp-imagemin');
-const babel = require('gulp-babel');
-const uglify = require('gulp-uglify');
-const concat = require('gulp-concat');
 const cssnano = require('gulp-cssnano');
 const autoprefixer = require('gulp-autoprefixer');
 const htmlmin = require('gulp-htmlmin');
 const browserSync = require('browser-sync').create();
 
 const browsers = 'last 10 versions';
-
-gulp.task('dist', [
-  'copy-images',
-  'copy-json',
-  'dist-html',
-  'dist-scripts',
-  'dist-styles'
-]);
-
-/**
- *
- */
 
 gulp.task('default', ['dist'], function() {
   browserSync.init({
@@ -35,6 +22,17 @@ gulp.task('default', ['dist'], function() {
   gulp.watch('src/**/*.json', ['copy-json', browserSync.reload]);
   gulp.watch('src/img/**/*', ['copy-images', browserSync.reload]);
 });
+
+/**
+ * Creates the dist folder with all assets ready for production
+ */
+gulp.task('dist', [
+  'copy-images',
+  'copy-json',
+  'dist-html',
+  'dist-scripts',
+  'dist-styles'
+]);
 
 /**
  * Copies images
@@ -56,35 +54,19 @@ gulp.task('copy-json', function() {
 gulp.task('dist-html', function() {
   return gulp
     .src(['src/**/*.html'])
-    .pipe(
-      htmlmin({
-        collapseWhitespace: true,
-        removeComments: true
-      })
-    )
+    .pipe(htmlmin({ collapseWhitespace: true, removeComments: true }))
     .pipe(gulp.dest('./dist'));
 });
 
 /**
- * Transpiles, and minifies scripts
+ * Transpiles, bundles and minifies scripts
  */
 gulp.task('dist-scripts', function() {
-  gulp
-    .src('src/js/utils/**/*.js')
-    .pipe(concat('utils.js'))
-    .pipe(
-      babel({ presets: [ [ 'env', { targets: { browsers: [browsers] } } ] ] })
-    )
-    .pipe(uglify())
-    .pipe(gulp.dest('dist/js'));
+  const webpackConfig = require('./webpack.config');
 
-  gulp
-    .src(['src/**/*.js', '!src/js/utils/**/*.js'])
-    .pipe(
-      babel({ presets: [ [ 'env', { targets: { browsers: [browsers] } } ] ] })
-    )
-    .pipe(uglify())
-    .pipe(gulp.dest('dist'));
+  gulp.src(['src/js/**/*'])
+    .pipe(webpackStream(webpackConfig, webpack))
+    .pipe(gulp.dest('dist'))
 });
 
 /**
@@ -93,12 +75,7 @@ gulp.task('dist-scripts', function() {
 gulp.task('dist-styles', function() {
   gulp
     .src('src/css/**/*.css')
-    .pipe(
-      autoprefixer({
-        browsers: [browsers],
-        cascade: false
-      })
-    )
+    .pipe(autoprefixer({ browsers: [browsers], cascade: false }))
     .pipe(cssnano({ zindex: false }))
     .pipe(gulp.dest('dist/css'));
 });

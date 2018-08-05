@@ -1,17 +1,16 @@
 /**
  * Helper functions.
  */
-class Helper {
+export default class Helper {
   /**
    * Register a service worker controlling the root
    */
   static registerServiceWorker() {
-    if ('serviceWorker' in navigator) {
-      return navigator
-        .serviceWorker
-        .register('service_worker.js')
-        .then(reg => console.log('Registration success', reg))
-        .catch(error => console.error('Error', error))
+    if ("serviceWorker" in navigator) {
+      return navigator.serviceWorker
+        .register("service_worker.js")
+        .then(reg => console.log("Registration success", reg))
+        .catch(error => console.error("Error", error));
     } else {
       return null;
     }
@@ -45,27 +44,27 @@ class Helper {
     } else {
       return [
         {
-          url: 'img/icons/icon16.png',
+          url: "img/icons/icon16.png",
           width: 16
         },
         {
-          url: 'img/icons/icon96.png',
+          url: "img/icons/icon96.png",
           width: 96
         },
         {
-          url: 'img/icons/icon144.png',
+          url: "img/icons/icon144.png",
           width: 144
         },
         {
-          url: 'img/icons/icon192.png',
+          url: "img/icons/icon192.png",
           width: 192
         },
         {
-          url: 'img/icons/icon256.png',
+          url: "img/icons/icon256.png",
           width: 256
         },
         {
-          url: 'img/icons/icon512.png',
+          url: "img/icons/icon512.png",
           width: 512
         }
       ];

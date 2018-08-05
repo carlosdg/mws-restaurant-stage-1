@@ -2,10 +2,11 @@
   "name": "mws-restaurant",
   "version": "1.0.0",
   "description": "Udacity Mobile Web Nanodegree Project",
-  "main": "index.html",
+  "main": "src/index.html",
   "scripts": {
-    "start": "gulp",
-    "dist": "gulp dist"
+    "start": "npm run build && http-server dist",
+    "dev": "gulp",
+    "build": "gulp dist"
   },
   "repository": {
     "type": "git",
@@ -18,17 +19,18 @@
   },
   "homepage": "https://github.com/carlosdg/mws-restaurant-stage-1#readme",
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-preset-env": "^1.7.0",
     "browser-sync": "^2.24.6",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^5.0.0",
-    "gulp-babel": "^7.0.1",
-    "gulp-concat": "^2.6.1",
     "gulp-cssnano": "^2.1.3",
     "gulp-htmlmin": "^4.0.0",
     "gulp-imagemin": "^4.1.0",
-    "gulp-uglify": "^3.0.0",
-    "lighthouse": "^3.0.3"
+    "http-server": "^0.11.1",
+    "webpack": "^4.16.4",
+    "webpack-cli": "^3.1.0",
+    "webpack-stream": "^5.1.0"
+  },
+  "dependencies": {
+    "idb": "^2.1.3"
   }
 }

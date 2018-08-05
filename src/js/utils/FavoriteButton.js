@@ -1,4 +1,4 @@
-class FavoriteButton {
+export class FavoriteButton {
   /**
    * Creates a favorite button from the given button element.
    * If no element is passed, a new element is created.
@@ -30,19 +30,19 @@ class FavoriteButton {
   }
 
   setState(isFavorite) {
-    if (isFavorite === true || isFavorite === 'true') {
-      this.domButton.classList.add('favorite');
-      this.domButton.setAttribute('title', FavoriteButton.REMOVE_LABEL);
-      this.domButton.setAttribute('aria-label', FavoriteButton.REMOVE_LABEL);
+    if (isFavorite === true || isFavorite === "true") {
+      this.domButton.classList.add("favorite");
+      this.domButton.setAttribute("title", FavoriteButton.REMOVE_LABEL);
+      this.domButton.setAttribute("aria-label", FavoriteButton.REMOVE_LABEL);
     } else {
-      this.domButton.classList.remove('favorite');
-      this.domButton.setAttribute('title', FavoriteButton.ADD_LABEL);
-      this.domButton.setAttribute('aria-label', FavoriteButton.ADD_LABEL);
+      this.domButton.classList.remove("favorite");
+      this.domButton.setAttribute("title", FavoriteButton.ADD_LABEL);
+      this.domButton.setAttribute("aria-label", FavoriteButton.ADD_LABEL);
     }
   }
 
   get isFavorite() {
-    return this.domButton.classList.contains('favorite');
+    return this.domButton.classList.contains("favorite");
   }
 
   get domElement() {
@@ -50,21 +50,21 @@ class FavoriteButton {
   }
 
   static get ADD_LABEL() {
-    return 'Add restaurant to favorites';
+    return "Add restaurant to favorites";
   }
 
   static get REMOVE_LABEL() {
-    return 'Remove restaurant from favorites';
+    return "Remove restaurant from favorites";
   }
 
   static createElement() {
-    const btn = document.createElement('button');
-    btn.setAttribute('title', FavoriteButton.ADD_LABEL);
-    btn.setAttribute('aria-label', FavoriteButton.ADD_LABEL);
-    btn.classList.add('favorite-btn');
+    const btn = document.createElement("button");
+    btn.setAttribute("title", FavoriteButton.ADD_LABEL);
+    btn.setAttribute("aria-label", FavoriteButton.ADD_LABEL);
+    btn.classList.add("favorite-btn");
 
-    const span = document.createElement('span');
-    span.innerText = '★';
+    const span = document.createElement("span");
+    span.innerText = "★";
 
     btn.appendChild(span);
 

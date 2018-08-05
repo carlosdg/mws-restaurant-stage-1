@@ -1,9 +1,12 @@
+import { IdbProxy } from "./IdbProxy";
+import { config } from "./IdbConfig";
+
 /**
  * Used to retrieve Restaurant data from IndexedDB and
  * to update the restaurant data at IndexedDB from the
  * remote server
  */
-class RestaurantsDatabase {
+export class RestaurantsDatabase {
   /**
    * Remote database URL
    */
@@ -16,7 +19,7 @@ class RestaurantsDatabase {
    * IndexedDB restaurants object store
    */
   static get IDB_OBJECT_STORE_NAME() {
-    return 'restaurants';
+    return config.RestaurantsDatabase.objectStoreName;
   }
 
   constructor() {
@@ -40,13 +43,12 @@ class RestaurantsDatabase {
    * Retrieves the restaurant with the given ID from IDB.
    */
   getRestaurant(id) {
-    return this._dbPromise
-      .then(db =>
-        db
-          .transaction(RestaurantsDatabase.IDB_OBJECT_STORE_NAME)
-          .objectStore(RestaurantsDatabase.IDB_OBJECT_STORE_NAME)
-          .get(id)
-      )
+    return this._dbPromise.then(db =>
+      db
+        .transaction(RestaurantsDatabase.IDB_OBJECT_STORE_NAME)
+        .objectStore(RestaurantsDatabase.IDB_OBJECT_STORE_NAME)
+        .get(id)
+    );
   }
 
   getNeighborhoods() {
@@ -79,20 +81,20 @@ class RestaurantsDatabase {
     );
   }
 
-  getFilteredRestaurants({ cuisine = 'all', neighborhood = 'all' } = {}) {
+  getFilteredRestaurants({ cuisine = "all", neighborhood = "all" } = {}) {
     return (
       this.getRestaurants()
         // Filter by cuisine
         .then(
           restaurants =>
-            cuisine === 'all'
+            cuisine === "all"
               ? restaurants
               : restaurants.filter(r => r.cuisine_type === cuisine)
         )
         // Filter by neighborhood
         .then(
           restaurants =>
-            neighborhood === 'all'
+            neighborhood === "all"
               ? restaurants
               : restaurants.filter(r => r.neighborhood == neighborhood)
         )
@@ -117,7 +119,7 @@ class RestaurantsDatabase {
    * database and update IDB.
    */
   updateRestaurant(id) {
-    return fetch(RestaurantsDatabase.REMOTE_DATABASE_URL + '/' + id)
+    return fetch(RestaurantsDatabase.REMOTE_DATABASE_URL + "/" + id)
       .then(response => response.json())
       .then(restaurant => {
         this._updateRestaurants([restaurant]);
@@ -131,8 +133,8 @@ class RestaurantsDatabase {
   _updateRestaurants(restaurants) {
     return this._dbPromise.then(db => {
       const store = db
-        .transaction('restaurants', 'readwrite')
-        .objectStore('restaurants');
+        .transaction("restaurants", "readwrite")
+        .objectStore("restaurants");
       restaurants.forEach(restaurant => store.put(restaurant));
     });
   }

@@ -1,7 +1,12 @@
-let restaurantDb;
-let pendingRequestsDb;
-var map;
-var markers = [];
+import { FavoriteButton } from "./utils/FavoriteButton";
+import Helper from "./utils/Helper";
+import { PendingRequestsDatabaseProxy } from "./utils/PendingRequestsDatabase";
+import { RestaurantsDatabase } from "./utils/RestaurantsDatabase";
+
+self.restaurantDb = null;
+self.pendingRequestsDb = null;
+self.map = null;
+self.markers = [];
 
 /**
  * As soon as the page is loaded:
@@ -9,7 +14,7 @@ var markers = [];
  *  - Initialize the application with the restaurant data from IDB
  *  - Fetch new data from the remote server to update IDB and update the application
  */
-document.addEventListener('DOMContentLoaded', _ => {
+document.addEventListener("DOMContentLoaded", _ => {
   Helper.registerServiceWorker();
   self.restaurantDb = new RestaurantsDatabase();
   pendingRequestsDb = PendingRequestsDatabaseProxy.open();
@@ -29,23 +34,23 @@ function main() {
  * Initialize leaflet map.
  */
 function initMap() {
-  self.map = L.map('map', {
+  self.map = L.map("map", {
     center: [40.722216, -73.987501],
     zoom: 12,
     scrollWheelZoom: false
   });
 
   L.tileLayer(
-    'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={accessToken}',
+    "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={accessToken}",
     {
       accessToken:
-        'pk.eyJ1IjoiY2FybG9zLWRvbWluZ3VleiIsImEiOiJjampvOWE0ZnIxNnd3M3Zyc3pxM2ZnNHJkIn0.y4purOXmeN0qCA2vW4etCg',
+        "pk.eyJ1IjoiY2FybG9zLWRvbWluZ3VleiIsImEiOiJjampvOWE0ZnIxNnd3M3Zyc3pxM2ZnNHJkIn0.y4purOXmeN0qCA2vW4etCg",
       maxZoom: 18,
       attribution:
         'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
         '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
         'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-      id: 'mapbox.streets'
+      id: "mapbox.streets"
     }
   ).addTo(self.map);
 }
@@ -64,10 +69,10 @@ function updateNeighborhoods() {
  * Set neighborhood filter HTML.
  */
 function fillNeighborhoodFilterHtml(neighborhoods) {
-  const select = document.getElementById('neighborhoods-select');
+  const select = document.getElementById("neighborhoods-select");
 
   neighborhoods.forEach(neighborhood => {
-    const option = document.createElement('option');
+    const option = document.createElement("option");
     option.innerHTML = neighborhood;
     option.value = neighborhood;
     select.append(option);
@@ -88,10 +93,10 @@ function updateCuisines() {
  * Set cuisine filter HTML.
  */
 function fillCuisineFilterHtml(cuisines) {
-  const select = document.getElementById('cuisines-select');
+  const select = document.getElementById("cuisines-select");
 
   cuisines.forEach(cuisine => {
-    const option = document.createElement('option');
+    const option = document.createElement("option");
     option.innerHTML = cuisine;
     option.value = cuisine;
     select.append(option);
@@ -102,15 +107,15 @@ function fillCuisineFilterHtml(cuisines) {
  * Update page and map for current restaurants.
  */
 function updateRestaurants() {
-  const cSelect = document.getElementById('cuisines-select');
-  const nSelect = document.getElementById('neighborhoods-select');
+  const cSelect = document.getElementById("cuisines-select");
+  const nSelect = document.getElementById("neighborhoods-select");
 
   const cIndex = cSelect.selectedIndex;
   const nIndex = nSelect.selectedIndex;
 
   // If the index is not valid we use 'all' as default
-  const cuisine = cSelect[cIndex] ? cSelect[cIndex].value : 'all';
-  const neighborhood = nSelect[nIndex] ? nSelect[nIndex].value : 'all';
+  const cuisine = cSelect[cIndex] ? cSelect[cIndex].value : "all";
+  const neighborhood = nSelect[nIndex] ? nSelect[nIndex].value : "all";
 
   self.restaurantDb
     .getFilteredRestaurants({ cuisine, neighborhood })
@@ -126,10 +131,10 @@ function updateRestaurants() {
  * Create all restaurants HTML and add them to the webpage.
  */
 function updateRestaurantInfoListHtml(restaurants) {
-  const ul = document.getElementById('restaurants-list');
+  const ul = document.getElementById("restaurants-list");
 
   // Remove all restaurants
-  ul.innerHTML = '';
+  ul.innerHTML = "";
 
   // Add new restaurants
   restaurants.forEach(restaurant =>
@@ -141,54 +146,57 @@ function updateRestaurantInfoListHtml(restaurants) {
  * Create restaurant HTML.
  */
 function createRestaurantInfoItemHtml(restaurant) {
-  const li = document.createElement('li');
-  li.classList.add('restaurant-info-preview');
+  const li = document.createElement("li");
+  li.classList.add("restaurant-info-preview");
 
-  const headerDiv = document.createElement('div');
-  headerDiv.classList.add('restaurant-info-header');
+  const headerDiv = document.createElement("div");
+  headerDiv.classList.add("restaurant-info-header");
   li.appendChild(headerDiv);
 
-  const name = document.createElement('h3');
-  name.classList.add('restaurant-preview-name');
+  const name = document.createElement("h3");
+  name.classList.add("restaurant-preview-name");
   name.innerText = restaurant.name;
   headerDiv.append(name);
 
   const toggleRestaurantFavoriteButton = createToggleFavoriteButton(restaurant);
   headerDiv.append(toggleRestaurantFavoriteButton);
 
-  const image = document.createElement('img');
+  const image = document.createElement("img");
   const imageSources = Helper.getRestaurantPhotoSources(restaurant);
-  image.classList.add('restaurant-preview-img');
-  image.setAttribute('alt', `promotional image of the restaurant "${restaurant.name}"`);
+  image.classList.add("restaurant-preview-img");
+  image.setAttribute(
+    "alt",
+    `promotional image of the restaurant "${restaurant.name}"`
+  );
 
   // Small image to load something super fast (same image as favicon)
-  image.setAttribute('src', 'img/icons/icon16.png');
+  image.setAttribute("src", "img/icons/icon16.png");
 
   // Lazy load the image
   image.onload = function() {
     image.setAttribute(
-      'srcset',
-      imageSources.map(({ url, width }) => `${url} ${width}w`).join(', ')
+      "srcset",
+      imageSources.map(({ url, width }) => `${url} ${width}w`).join(", ")
     );
-    image.setAttribute('sizes', '300px');
+    image.setAttribute("sizes", "300px");
     image.onload = null;
   };
   li.append(image);
 
-  const address = document.createElement('p');
-  address.classList.add('restaurant-preview-address');
-  address.setAttribute('title', 'Restaurant address');
+  const address = document.createElement("p");
+  address.classList.add("restaurant-preview-address");
+  address.setAttribute("title", "Restaurant address");
   address.innerText = restaurant.address;
   li.append(address);
 
-  const more = document.createElement('a');
+  const more = document.createElement("a");
   const description =
     'View details of the restaurant "' + restaurant.name + '"';
-  more.setAttribute('aria-label', description);
-  more.setAttribute('title', description);
-  more.setAttribute('href', Helper.urlForRestaurant(restaurant));
-  more.classList.add('restaurant-preview-details-link');
-  more.innerText = 'View Details';
+  more.setAttribute("aria-label", description);
+  more.setAttribute("title", description);
+  more.setAttribute("href", Helper.urlForRestaurant(restaurant));
+  more.classList.add("restaurant-preview-details-link");
+  more.innerText = "View Details";
   li.append(more);
 
   return li;
@@ -213,21 +221,23 @@ function updateMapMarkers(restaurants) {
     // Treat it as a link (a feature for convenience)
     const navigateToRestaurantPage = () =>
       (window.location.href = marker.options.url);
-    marker.on('click', navigateToRestaurantPage);
-    marker.on('touch', navigateToRestaurantPage);
+    marker.on("click", navigateToRestaurantPage);
+    marker.on("touch", navigateToRestaurantPage);
   });
 }
 
 function createToggleFavoriteButton(restaurant) {
   const btn = new FavoriteButton(null, restaurant.is_favorite);
 
-  btn.addEventListener('click', addRestaurantToFavorites);
-  btn.addEventListener('touch', addRestaurantToFavorites);
+  btn.addEventListener("click", addRestaurantToFavorites);
+  btn.addEventListener("touch", addRestaurantToFavorites);
 
   function addRestaurantToFavorites() {
     self.pendingRequestsDb.registerRequest({
-      url: `http://localhost:1337/restaurants/${restaurant.id}/?is_favorite=${btn.isFavorite}`, 
-      options: { method: 'PUT' }
+      url: `http://localhost:1337/restaurants/${restaurant.id}/?is_favorite=${
+        btn.isFavorite
+      }`,
+      options: { method: "PUT" }
     });
   }
 

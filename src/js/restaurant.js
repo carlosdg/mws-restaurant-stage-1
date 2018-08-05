@@ -1,18 +1,26 @@
-let map = null;
-let favoriteBtn = null;
-let pendingRequestsDb = null;
+import { FavoriteButton } from "./utils/FavoriteButton";
+import Helper from "./utils/Helper";
+import { PendingRequestsDatabaseProxy } from "./utils/PendingRequestsDatabase";
+import { RestaurantsDatabase } from "./utils/RestaurantsDatabase";
+import { ReviewsDatabase } from "./utils/ReviewsDatabase";
 
-document.addEventListener('DOMContentLoaded', () => {
+self.map = null;
+self.favoriteBtn = null;
+self.pendingRequestsDb = null;
+
+document.addEventListener("DOMContentLoaded", () => {
   Helper.registerServiceWorker();
 
   // Get ID of this restaurant
-  const restaurantId = parseInt(getParameterByName('id'), 10);
-  if (isNaN(restaurantId)) { throw 'Unknown id in URL'; }
+  const restaurantId = parseInt(getParameterByName("id"), 10);
+  if (isNaN(restaurantId)) {
+    throw "Unknown id in URL";
+  }
 
   // Initialize databases. PendingRequestsDatabaseProxy.open() also
   // tries to update the remote server with pending requests that may
   // be in IndexedDB
-  self.pendingRequestsDb =  PendingRequestsDatabaseProxy.open();
+  self.pendingRequestsDb = PendingRequestsDatabaseProxy.open();
   const restaurantsDb = new RestaurantsDatabase();
   const reviewsDb = new ReviewsDatabase();
 
@@ -21,24 +29,23 @@ document.addEventListener('DOMContentLoaded', () => {
   restaurantsDb
     .getRestaurant(restaurantId)
     .then(restaurant => updateAppHtml(restaurant))
-    .catch(error => console.error('Error using IDB restaurants', error))
+    .catch(error => console.error("Error using IDB restaurants", error))
     .then(() => restaurantsDb.updateRestaurant(restaurantId))
     .then(updatedRestaurant => updateAppHtml(updatedRestaurant))
-    .catch(error => console.error('Error using updated restaurants', error));
+    .catch(error => console.error("Error using updated restaurants", error));
 
-  // Get reviews from IDB. Then update IDB and 
+  // Get reviews from IDB. Then update IDB and
   // show the updated reviews
   reviewsDb
     .getReviews(restaurantId)
     .then(reviews => fillReviewsHtml(reviews))
-    .catch(error => console.error('Error using IDB reviews', error))
+    .catch(error => console.error("Error using IDB reviews", error))
     .then(() => reviewsDb.updateReviews(restaurantId))
     .then(updatedReviews => fillReviewsHtml(updatedReviews))
-    .catch(error => console.error('Error using updated reviews', error));
+    .catch(error => console.error("Error using updated reviews", error));
 
   // Add the submit event listener to the review form
   addReviewSubmitEventListener(restaurantId);
-
 });
 
 /**
@@ -57,23 +64,23 @@ function updateAppHtml(restaurant) {
  */
 function initMap(restaurant) {
   if (!self.map) {
-    self.map = L.map('map', {
+    self.map = L.map("map", {
       center: [restaurant.latlng.lat, restaurant.latlng.lng],
       zoom: 16,
       scrollWheelZoom: false
     });
 
     L.tileLayer(
-      'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={accessToken}',
+      "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={accessToken}",
       {
         accessToken:
-          'pk.eyJ1IjoiY2FybG9zLWRvbWluZ3VleiIsImEiOiJjampvOWE0ZnIxNnd3M3Zyc3pxM2ZnNHJkIn0.y4purOXmeN0qCA2vW4etCg',
+          "pk.eyJ1IjoiY2FybG9zLWRvbWluZ3VleiIsImEiOiJjampvOWE0ZnIxNnd3M3Zyc3pxM2ZnNHJkIn0.y4purOXmeN0qCA2vW4etCg",
         maxZoom: 18,
         attribution:
           'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
           '<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
           'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        id: 'mapbox.streets'
+        id: "mapbox.streets"
       }
     ).addTo(self.map);
 
@@ -85,34 +92,37 @@ function initMap(restaurant) {
  * Create restaurant HTML and add it to the webpage
  */
 function fillRestaurantHtml(restaurant) {
-  const name = document.getElementById('restaurant-name');
+  const name = document.getElementById("restaurant-name");
   name.innerText = restaurant.name;
 
-  const address = document.getElementById('restaurant-address');
+  const address = document.getElementById("restaurant-address");
   address.innerText = restaurant.address;
 
-  const image = document.getElementById('restaurant-img');
+  const image = document.getElementById("restaurant-img");
   const imageSources = Helper.getRestaurantPhotoSources(restaurant);
-  image.className = 'restaurant-img';
-  image.setAttribute('alt', `promotional image of the restaurant "${restaurant.name}"`);
+  image.className = "restaurant-img";
+  image.setAttribute(
+    "alt",
+    `promotional image of the restaurant "${restaurant.name}"`
+  );
 
   // Small image to load something super fast (same image as favicon)
-  image.setAttribute('src', 'img/icons/icon16.png');
+  image.setAttribute("src", "img/icons/icon16.png");
 
   // Lazy load the image
   image.onload = function() {
     image.setAttribute(
-      'srcset',
-      imageSources.map(({ url, width }) => `${url} ${width}w`).join(', ')
+      "srcset",
+      imageSources.map(({ url, width }) => `${url} ${width}w`).join(", ")
     );
     image.setAttribute(
-      'sizes',
+      "sizes",
       `(max-width: 700px) 100vw, (min-width: 701px) 40vw`
     );
     image.onload = null;
   };
 
-  const cuisine = document.getElementById('restaurant-cuisine');
+  const cuisine = document.getElementById("restaurant-cuisine");
   cuisine.innerText = restaurant.cuisine_type;
 }
 
@@ -120,19 +130,19 @@ function fillRestaurantHtml(restaurant) {
  * Create restaurant operating hours HTML table and add it to the webpage.
  */
 function fillRestaurantHoursHtml(operatingHours) {
-  const hours = document.getElementById('restaurant-hours');
-  hours.innerHTML = '';
+  const hours = document.getElementById("restaurant-hours");
+  hours.innerHTML = "";
 
   for (let key in operatingHours) {
-    const row = document.createElement('tr');
+    const row = document.createElement("tr");
 
-    const day = document.createElement('th');
-    day.setAttribute('scope', 'row');
+    const day = document.createElement("th");
+    day.setAttribute("scope", "row");
     day.innerHTML = key;
     row.appendChild(day);
 
-    operatingHours[key].split(',').forEach(operatingHour => {
-      const time = document.createElement('td');
+    operatingHours[key].split(",").forEach(operatingHour => {
+      const time = document.createElement("td");
       time.innerHTML = operatingHour;
       row.appendChild(time);
     });
@@ -145,12 +155,12 @@ function fillRestaurantHoursHtml(operatingHours) {
  * Create all reviews HTML and add them to the webpage.
  */
 function fillReviewsHtml(reviews) {
-  const ul = document.getElementById('reviews-list');
+  const ul = document.getElementById("reviews-list");
 
   if (!reviews) {
-    ul.innerHTML = 'No reviews yet!';
+    ul.innerHTML = "No reviews yet!";
   } else {
-    ul.innerHTML = '';
+    ul.innerHTML = "";
     reviews.forEach(review => ul.appendChild(createReviewHtml(review)));
   }
 }
@@ -159,27 +169,29 @@ function fillReviewsHtml(reviews) {
  * Create review HTML and add it to the webpage.
  */
 function createReviewHtml(review) {
-  const li = document.createElement('li');
-  li.classList.add('review');
+  const li = document.createElement("li");
+  li.classList.add("review");
 
-  const rating = document.createElement('p');
+  const rating = document.createElement("p");
   rating.innerHTML = `<strong>Rating:</strong> ${review.rating}`;
-  rating.classList.add('review-rating');
+  rating.classList.add("review-rating");
   li.appendChild(rating);
 
-  const date = document.createElement('p');
-  date.innerHTML = `<strong>Date:</strong> ${new Date(review.updatedAt).toUTCString()}`;
-  date.classList.add('review-date');
+  const date = document.createElement("p");
+  date.innerHTML = `<strong>Date:</strong> ${new Date(
+    review.updatedAt
+  ).toUTCString()}`;
+  date.classList.add("review-date");
   li.appendChild(date);
 
-  const name = document.createElement('p');
+  const name = document.createElement("p");
   name.innerHTML = `<strong>Reviewer:</strong> ${review.name}`;
-  name.classList.add('reviewer-name');
+  name.classList.add("reviewer-name");
   li.appendChild(name);
 
-  const comments = document.createElement('p');
+  const comments = document.createElement("p");
   comments.innerHTML = review.comments;
-  comments.classList.add('review-comment');
+  comments.classList.add("review-comment");
   li.appendChild(comments);
 
   return li;
@@ -189,16 +201,16 @@ function createReviewHtml(review) {
  * Fill the breadcrumb navigation menu
  */
 function fillBreadcrumb(restaurant) {
-  const breadcrumb = document.getElementById('breadcrumb');
-  breadcrumb.innerHTML = '';
-  
-  const homeLi = document.createElement('li');
-  const homeLink = document.createElement('a');
-  homeLink.innerText = 'Home';
-  homeLink.setAttribute('href', '/');
-  homeLink.classList.add('inline-link');
+  const breadcrumb = document.getElementById("breadcrumb");
+  breadcrumb.innerHTML = "";
 
-  const li = document.createElement('li');
+  const homeLi = document.createElement("li");
+  const homeLink = document.createElement("a");
+  homeLink.innerText = "Home";
+  homeLink.setAttribute("href", "/");
+  homeLink.classList.add("inline-link");
+
+  const li = document.createElement("li");
   li.innerHTML = restaurant.name;
 
   homeLi.appendChild(homeLink);
@@ -211,12 +223,12 @@ function fillBreadcrumb(restaurant) {
  */
 function getParameterByName(name, url) {
   if (!url) url = window.location.href;
-  name = name.replace(/[\[\]]/g, '\\$&');
+  name = name.replace(/[\[\]]/g, "\\$&");
   const regex = new RegExp(`[?&]${name}(=([^&#]*)|&|#|$)`),
     results = regex.exec(url);
   if (!results) return null;
-  if (!results[2]) return '';
-  return decodeURIComponent(results[2].replace(/\+/g, ' '));
+  if (!results[2]) return "";
+  return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
 function initFavoriteButton(restaurant) {
@@ -224,16 +236,20 @@ function initFavoriteButton(restaurant) {
   // button. If this is not the first time, it will just update the state
   // of the button
   if (!self.favoriteBtn) {
-    const domButton = document.querySelector('#restaurant-container .favorite-btn');
+    const domButton = document.querySelector(
+      "#restaurant-container .favorite-btn"
+    );
     self.favoriteBtn = new FavoriteButton(domButton, restaurant.is_favorite);
-  
-    self.favoriteBtn.addEventListener('click', addRestaurantToFavorites);
-    self.favoriteBtn.addEventListener('touch', addRestaurantToFavorites);
-  
+
+    self.favoriteBtn.addEventListener("click", addRestaurantToFavorites);
+    self.favoriteBtn.addEventListener("touch", addRestaurantToFavorites);
+
     function addRestaurantToFavorites() {
       self.pendingRequestsDb.registerRequest({
-        url: `http://localhost:1337/restaurants/${restaurant.id}/?is_favorite=${self.favoriteBtn.isFavorite}`, 
-        options: { method: 'PUT' }
+        url: `http://localhost:1337/restaurants/${restaurant.id}/?is_favorite=${
+          self.favoriteBtn.isFavorite
+        }`,
+        options: { method: "PUT" }
       });
     }
   } else {
@@ -244,26 +260,28 @@ function initFavoriteButton(restaurant) {
 function addReviewSubmitEventListener(restaurantId) {
   // Review UL DOM element to append new reviews. This is so the user has
   // instant feedback
-  const reviewList = document.getElementById('reviews-list');
+  const reviewList = document.getElementById("reviews-list");
 
   // Add event listener to the form
-  document.getElementById('form-submit-review').addEventListener('submit', event => {
-    event.preventDefault();
+  document
+    .getElementById("form-submit-review")
+    .addEventListener("submit", event => {
+      event.preventDefault();
 
-    const form = event.target;
-    const reviewInfo = {
-      restaurant_id: restaurantId,
-      name: form['input-name'].value,
-      rating: parseInt(form['select-rating'].value, 10),
-      comments: form['textarea-review'].value,
-      updatedAt: Date.now()
-    };
+      const form = event.target;
+      const reviewInfo = {
+        restaurant_id: restaurantId,
+        name: form["input-name"].value,
+        rating: parseInt(form["select-rating"].value, 10),
+        comments: form["textarea-review"].value,
+        updatedAt: Date.now()
+      };
 
-    self.pendingRequestsDb.registerRequest({
-      url: `http://localhost:1337/reviews/`, 
-      options: { method: 'POST', body: JSON.stringify(reviewInfo) }
+      self.pendingRequestsDb.registerRequest({
+        url: `http://localhost:1337/reviews/`,
+        options: { method: "POST", body: JSON.stringify(reviewInfo) }
+      });
+
+      reviewList.appendChild(createReviewHtml(reviewInfo));
     });
-
-    reviewList.appendChild(createReviewHtml(reviewInfo));
-  })
 }

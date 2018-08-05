@@ -1,9 +1,12 @@
+import { IdbProxy } from "./IdbProxy";
+import { config } from "./IdbConfig";
+
 /**
  * Used to retrieve Reviews data from IndexedDB and
  * to update the reviews data at IndexedDB from the
  * remote server
  */
-class ReviewsDatabase {
+export class ReviewsDatabase {
   /**
    * Remote database URL
    */
@@ -16,7 +19,7 @@ class ReviewsDatabase {
    * IndexedDB reviews object store
    */
   static get IDB_OBJECT_STORE_NAME() {
-    return "reviews";
+    return config.ReviewsDatabase.objectStoreName;
   }
 
   constructor() {

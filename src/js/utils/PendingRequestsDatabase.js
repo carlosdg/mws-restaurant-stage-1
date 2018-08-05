@@ -1,18 +1,21 @@
+import { IdbProxy } from "./IdbProxy";
+import { config } from "./IdbConfig";
+
 /**
  * Proxy for PendingRequestsDatabase. It ensures that only an object
  * is created, next calls will result in returning a cached object.
- * 
+ *
  * This is because PendingRequestsDatabase construction should only
  * happen once in the application lifetime. It registers an online event
  * listener and tries to send all pending requests found in IDB from previous
  * sessions. Those should only happen once
  */
-class PendingRequestsDatabaseProxy {
+export class PendingRequestsDatabaseProxy {
   static open() {
     if (!PendingRequestsDatabaseProxy._cachedObject) {
-      PendingRequestsDatabaseProxy._cachedObject = new PendingRequestsDatabase()
+      PendingRequestsDatabaseProxy._cachedObject = new PendingRequestsDatabase();
     }
-    
+
     return PendingRequestsDatabaseProxy._cachedObject;
   }
 }
@@ -21,14 +24,14 @@ class PendingRequestsDatabaseProxy {
  * Registers requests to send to the server.
  * If a given request fails because the application is offline, it is
  * stored in IDB.
- * 
+ *
  * The objects that are stored in the pending requests object store have the
  * following properties:
- * 
+ *
  * - id: ID of the object to store in IDB
  * - url: URL to send the fetch request
  * - options: fetch options.
- * 
+ *
  * Example:
  * {
  *  id: 1,
@@ -41,7 +44,7 @@ class PendingRequestsDatabaseProxy {
  */
 class PendingRequestsDatabase {
   static get IDB_OBJECT_STORE_NAME() {
-    return "pending_requests";
+    return config.PendingRequestsDatabase.objectStoreName;
   }
 
   constructor() {
@@ -60,7 +63,7 @@ class PendingRequestsDatabase {
         // Register event listener so every time the user goes online
         // we try to send all pending requests
         window.addEventListener("online", this._sendAllPendingRequests);
-      })
+      });
   }
 
   /**
@@ -72,10 +75,14 @@ class PendingRequestsDatabase {
     return fetch(url, options).catch(error => {
       // Add the request info to the pending requests
       this._dbPromise.then(db =>
-        db.transaction(PendingRequestsDatabase.IDB_OBJECT_STORE_NAME, "readwrite")
+        db
+          .transaction(
+            PendingRequestsDatabase.IDB_OBJECT_STORE_NAME,
+            "readwrite"
+          )
           .objectStore(PendingRequestsDatabase.IDB_OBJECT_STORE_NAME)
           .put({ url, options })
-      )
+      );
 
       // Rethrow the error in case the caller wants to know if the request
       // failed this first time
@@ -89,7 +96,8 @@ class PendingRequestsDatabase {
   _sendAllPendingRequests() {
     return this._dbPromise.then(db =>
       // Get all pending requests
-      db.transaction(PendingRequestsDatabase.IDB_OBJECT_STORE_NAME)
+      db
+        .transaction(PendingRequestsDatabase.IDB_OBJECT_STORE_NAME)
         .objectStore(PendingRequestsDatabase.IDB_OBJECT_STORE_NAME)
         .getAll()
         // Send all requests and delete the ones that success from the object store
@@ -105,9 +113,13 @@ class PendingRequestsDatabase {
     return fetch(url, options)
       .then(_ => this._dbPromise)
       .then(db =>
-        db.transaction(PendingRequestsDatabase.IDB_OBJECT_STORE_NAME, "readwrite")
+        db
+          .transaction(
+            PendingRequestsDatabase.IDB_OBJECT_STORE_NAME,
+            "readwrite"
+          )
           .objectStore(PendingRequestsDatabase.IDB_OBJECT_STORE_NAME)
           .delete(id)
-      )
+      );
   }
 }
