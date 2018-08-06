@@ -1,4 +1,4 @@
-import { IdbProxy } from "./IdbProxy";
+import { applicationIdb } from "./ApplicationIdb";
 import { config } from "./IdbConfig";
 
 /**
@@ -24,7 +24,7 @@ export class RestaurantsDatabase {
 
   constructor() {
     // Connect to IDB
-    this._dbPromise = IdbProxy.open();
+    this._dbPromise = applicationIdb.open();
   }
 
   /**

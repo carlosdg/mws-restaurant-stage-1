@@ -1,4 +1,4 @@
-import { IdbProxy } from "./IdbProxy";
+import { applicationIdb } from "./ApplicationIdb";
 import { config } from "./IdbConfig";
 
 /**
@@ -54,7 +54,7 @@ class PendingRequestsDatabase {
     this._sendAllPendingRequests = this._sendAllPendingRequests.bind(this);
 
     // Connect to IDB
-    this._dbPromise = IdbProxy.open();
+    this._dbPromise = applicationIdb.open();
 
     // Try to send any pending request in IDB (if any)
     this._sendAllPendingRequests()
