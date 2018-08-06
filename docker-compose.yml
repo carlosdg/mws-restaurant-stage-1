@@ -1,18 +1,12 @@
 version: "3"
 services:
-  builder:
-    build: .
+  gulp-development:
+    build: "."
     image: "mws-builder"
-    volumes: 
-      - ".:/app"
-    environment:
-      MODE: 'production'
-
-  server:
-    image: "nginx"
-    depends_on:
-      - builder
+    environment: 
+      MODE: "development"
     ports:
-      - "8080:80"
-    volumes: 
-      - "./dist:/usr/share/nginx/html:ro"
+      - "3000:3000"
+    volumes:
+      - ".:/app"
+    command: "npm run dev"
