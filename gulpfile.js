@@ -12,8 +12,9 @@ const browsers = 'last 10 versions';
 gulp.task('default', ['dist'], function() {
   browserSync.init({
     server: {
-      baseDir: 'dist'
-    }
+      baseDir: 'dist',
+    },
+    open: false
   });
 
   gulp.watch('src/**/*.html', ['dist-html', browserSync.reload]);
