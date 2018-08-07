@@ -1,12 +1,11 @@
 import { FavoriteButton } from "./utils/FavoriteButton";
 import Helper from "./utils/Helper";
-import { PendingRequestsDatabaseProxy } from "./utils/PendingRequestsDatabase";
+import { pendingRequestsDatabase } from "./utils/PendingRequestsDatabase";
 import { RestaurantsDatabase } from "./utils/RestaurantsDatabase";
 import { ReviewsDatabase } from "./utils/ReviewsDatabase";
 
 self.map = null;
 self.favoriteBtn = null;
-self.pendingRequestsDb = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   Helper.registerServiceWorker();
@@ -17,10 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     throw "Unknown id in URL";
   }
 
-  // Initialize databases. PendingRequestsDatabaseProxy.open() also
-  // tries to update the remote server with pending requests that may
-  // be in IndexedDB
-  self.pendingRequestsDb = PendingRequestsDatabaseProxy.open();
+  // Initialize databases.
   const restaurantsDb = new RestaurantsDatabase();
   const reviewsDb = new ReviewsDatabase();
 
@@ -245,7 +241,7 @@ function initFavoriteButton(restaurant) {
     self.favoriteBtn.addEventListener("touch", addRestaurantToFavorites);
 
     function addRestaurantToFavorites() {
-      self.pendingRequestsDb.registerRequest({
+      pendingRequestsDatabase.registerRequest({
         url: `http://localhost:1337/restaurants/${restaurant.id}/?is_favorite=${
           self.favoriteBtn.isFavorite
         }`,
@@ -277,7 +273,7 @@ function addReviewSubmitEventListener(restaurantId) {
         updatedAt: Date.now()
       };
 
-      self.pendingRequestsDb.registerRequest({
+      pendingRequestsDatabase.registerRequest({
         url: `http://localhost:1337/reviews/`,
         options: { method: "POST", body: JSON.stringify(reviewInfo) }
       });

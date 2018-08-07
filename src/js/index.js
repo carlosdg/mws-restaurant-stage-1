@@ -1,10 +1,9 @@
 import { FavoriteButton } from "./utils/FavoriteButton";
 import Helper from "./utils/Helper";
-import { PendingRequestsDatabaseProxy } from "./utils/PendingRequestsDatabase";
+import { pendingRequestsDatabase } from "./utils/PendingRequestsDatabase";
 import { RestaurantsDatabase } from "./utils/RestaurantsDatabase";
 
 self.restaurantDb = null;
-self.pendingRequestsDb = null;
 self.map = null;
 self.markers = [];
 
@@ -17,7 +16,6 @@ self.markers = [];
 document.addEventListener("DOMContentLoaded", _ => {
   Helper.registerServiceWorker();
   self.restaurantDb = new RestaurantsDatabase();
-  pendingRequestsDb = PendingRequestsDatabaseProxy.open();
   initMap();
   main();
 
@@ -233,7 +231,7 @@ function createToggleFavoriteButton(restaurant) {
   btn.addEventListener("touch", addRestaurantToFavorites);
 
   function addRestaurantToFavorites() {
-    self.pendingRequestsDb.registerRequest({
+    pendingRequestsDatabase.registerRequest({
       url: `http://localhost:1337/restaurants/${restaurant.id}/?is_favorite=${
         btn.isFavorite
       }`,

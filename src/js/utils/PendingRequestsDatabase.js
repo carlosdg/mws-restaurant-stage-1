@@ -2,25 +2,6 @@ import { applicationIdb } from "./ApplicationIdb";
 import { config } from "./IdbConfig";
 
 /**
- * Proxy for PendingRequestsDatabase. It ensures that only an object
- * is created, next calls will result in returning a cached object.
- *
- * This is because PendingRequestsDatabase construction should only
- * happen once in the application lifetime. It registers an online event
- * listener and tries to send all pending requests found in IDB from previous
- * sessions. Those should only happen once
- */
-export class PendingRequestsDatabaseProxy {
-  static open() {
-    if (!PendingRequestsDatabaseProxy._cachedObject) {
-      PendingRequestsDatabaseProxy._cachedObject = new PendingRequestsDatabase();
-    }
-
-    return PendingRequestsDatabaseProxy._cachedObject;
-  }
-}
-
-/**
  * Registers requests to send to the server.
  * If a given request fails because the application is offline, it is
  * stored in IDB.
@@ -42,7 +23,7 @@ export class PendingRequestsDatabaseProxy {
  *  }
  * }
  */
-class PendingRequestsDatabase {
+class PendingRequestsDatabaseSingleton {
   static get IDB_OBJECT_STORE_NAME() {
     return config.PendingRequestsDatabase.objectStoreName;
   }
@@ -77,10 +58,10 @@ class PendingRequestsDatabase {
       this._dbPromise.then(db =>
         db
           .transaction(
-            PendingRequestsDatabase.IDB_OBJECT_STORE_NAME,
+            PendingRequestsDatabaseSingleton.IDB_OBJECT_STORE_NAME,
             "readwrite"
           )
-          .objectStore(PendingRequestsDatabase.IDB_OBJECT_STORE_NAME)
+          .objectStore(PendingRequestsDatabaseSingleton.IDB_OBJECT_STORE_NAME)
           .put({ url, options })
       );
 
@@ -97,8 +78,8 @@ class PendingRequestsDatabase {
     return this._dbPromise.then(db =>
       // Get all pending requests
       db
-        .transaction(PendingRequestsDatabase.IDB_OBJECT_STORE_NAME)
-        .objectStore(PendingRequestsDatabase.IDB_OBJECT_STORE_NAME)
+        .transaction(PendingRequestsDatabaseSingleton.IDB_OBJECT_STORE_NAME)
+        .objectStore(PendingRequestsDatabaseSingleton.IDB_OBJECT_STORE_NAME)
         .getAll()
         // Send all requests and delete the ones that success from the object store
         .then(pendingRequests => pendingRequests.map(this._sendPendingRequest))
@@ -115,11 +96,13 @@ class PendingRequestsDatabase {
       .then(db =>
         db
           .transaction(
-            PendingRequestsDatabase.IDB_OBJECT_STORE_NAME,
+            PendingRequestsDatabaseSingleton.IDB_OBJECT_STORE_NAME,
             "readwrite"
           )
-          .objectStore(PendingRequestsDatabase.IDB_OBJECT_STORE_NAME)
+          .objectStore(PendingRequestsDatabaseSingleton.IDB_OBJECT_STORE_NAME)
           .delete(id)
       );
   }
 }
+
+export const pendingRequestsDatabase = new PendingRequestsDatabaseSingleton();
