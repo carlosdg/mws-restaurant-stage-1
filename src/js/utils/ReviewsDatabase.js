@@ -1,5 +1,6 @@
 import { applicationIdb } from "./ApplicationIdb";
 import { config } from "./IdbConfig";
+import remoteDatabaseRequestInfo from './RemoteDatabaseRequestInfo';
 
 /**
  * Used to retrieve Reviews data from IndexedDB and
@@ -7,14 +8,6 @@ import { config } from "./IdbConfig";
  * remote server
  */
 export class ReviewsDatabase {
-  /**
-   * Remote database URL
-   */
-  static getRemoteDatabaseUrl(restaurantId) {
-    const port = 1337;
-    return `http://localhost:${port}/reviews/?restaurant_id=${restaurantId}`;
-  }
-
   /**
    * IndexedDB reviews object store
    */
@@ -46,7 +39,8 @@ export class ReviewsDatabase {
    * from the remote database and update IDB.
    */
   updateReviews(restaurantId) {
-    return fetch(ReviewsDatabase.getRemoteDatabaseUrl(restaurantId))
+    const requestInfo = remoteDatabaseRequestInfo.getAllRestaurantReviews({restaurantId});
+    return fetch(requestInfo.url, requestInfo.options)
       .then(response => response.json())
       .then(reviews => {
         this._updateReviews({ restaurantId, reviews });

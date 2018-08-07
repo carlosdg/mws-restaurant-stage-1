@@ -3,6 +3,7 @@ import Helper from "./utils/Helper";
 import { pendingRequestsDatabase } from "./utils/PendingRequestsDatabase";
 import { RestaurantsDatabase } from "./utils/RestaurantsDatabase";
 import { ReviewsDatabase } from "./utils/ReviewsDatabase";
+import remoteDatabaseRequestInfo from './utils/RemoteDatabaseRequestInfo';
 
 self.map = null;
 self.favoriteBtn = null;
@@ -241,12 +242,11 @@ function initFavoriteButton(restaurant) {
     self.favoriteBtn.addEventListener("touch", addRestaurantToFavorites);
 
     function addRestaurantToFavorites() {
-      pendingRequestsDatabase.registerRequest({
-        url: `http://localhost:1337/restaurants/${restaurant.id}/?is_favorite=${
-          self.favoriteBtn.isFavorite
-        }`,
-        options: { method: "PUT" }
+      const request = remoteDatabaseRequestInfo.putRestaurantFavorite({ 
+        restaurantId: restaurant.id,
+        isFavorite: btn.isFavorite
       });
+      pendingRequestsDatabase.registerRequest(request);
     }
   } else {
     self.favoriteBtn.setState(restaurant.is_favorite);
@@ -266,17 +266,15 @@ function addReviewSubmitEventListener(restaurantId) {
 
       const form = event.target;
       const reviewInfo = {
-        restaurant_id: restaurantId,
+        restaurantId,
         name: form["input-name"].value,
         rating: parseInt(form["select-rating"].value, 10),
         comments: form["textarea-review"].value,
         updatedAt: Date.now()
       };
 
-      pendingRequestsDatabase.registerRequest({
-        url: `http://localhost:1337/reviews/`,
-        options: { method: "POST", body: JSON.stringify(reviewInfo) }
-      });
+      const request = remoteDatabaseRequestInfo.postNewReview(reviewInfo);
+      pendingRequestsDatabase.registerRequest(request);
 
       reviewList.appendChild(createReviewHtml(reviewInfo));
     });

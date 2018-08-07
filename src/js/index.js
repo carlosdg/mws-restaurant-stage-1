@@ -2,6 +2,7 @@ import { FavoriteButton } from "./utils/FavoriteButton";
 import Helper from "./utils/Helper";
 import { pendingRequestsDatabase } from "./utils/PendingRequestsDatabase";
 import { RestaurantsDatabase } from "./utils/RestaurantsDatabase";
+import remoteDatabaseRequestInfo from './utils/RemoteDatabaseRequestInfo';
 
 self.restaurantDb = null;
 self.map = null;
@@ -231,12 +232,11 @@ function createToggleFavoriteButton(restaurant) {
   btn.addEventListener("touch", addRestaurantToFavorites);
 
   function addRestaurantToFavorites() {
-    pendingRequestsDatabase.registerRequest({
-      url: `http://localhost:1337/restaurants/${restaurant.id}/?is_favorite=${
-        btn.isFavorite
-      }`,
-      options: { method: "PUT" }
+    const request = remoteDatabaseRequestInfo.putRestaurantFavorite({ 
+      restaurantId: restaurant.id,
+      isFavorite: btn.isFavorite
     });
+    pendingRequestsDatabase.registerRequest(request);
   }
 
   return btn.domButton;

@@ -1,5 +1,6 @@
 import { applicationIdb } from "./ApplicationIdb";
 import { config } from "./IdbConfig";
+import remoteDatabaseRequestInfo from './RemoteDatabaseRequestInfo';
 
 /**
  * Used to retrieve Restaurant data from IndexedDB and
@@ -7,14 +8,6 @@ import { config } from "./IdbConfig";
  * remote server
  */
 export class RestaurantsDatabase {
-  /**
-   * Remote database URL
-   */
-  static get REMOTE_DATABASE_URL() {
-    const port = 1337;
-    return `http://localhost:${port}/restaurants`;
-  }
-
   /**
    * IndexedDB restaurants object store
    */
@@ -106,7 +99,8 @@ export class RestaurantsDatabase {
    * database and update IDB.
    */
   updateRestaurants() {
-    return fetch(RestaurantsDatabase.REMOTE_DATABASE_URL)
+    const requestInfo = remoteDatabaseRequestInfo.getAllRestaurants();
+    return fetch(requestInfo.url, requestInfo.options)
       .then(response => response.json())
       .then(restaurants => {
         this._updateRestaurants(restaurants);
@@ -118,8 +112,9 @@ export class RestaurantsDatabase {
    * Tries to fetch restaurant information from the remote
    * database and update IDB.
    */
-  updateRestaurant(id) {
-    return fetch(RestaurantsDatabase.REMOTE_DATABASE_URL + "/" + id)
+  updateRestaurant(restaurantId) {
+    const requestInfo = remoteDatabaseRequestInfo.getRestaurant({restaurantId});
+    return fetch(requestInfo.url, requestInfo.options)
       .then(response => response.json())
       .then(restaurant => {
         this._updateRestaurants([restaurant]);
