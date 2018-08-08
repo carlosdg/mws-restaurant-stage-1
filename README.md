@@ -1,5 +1,7 @@
 # Restaurant Reviews (Mobile Web Specialist Certification Course)
 
+**Note**: this repository is outdated with respect to [RestaurantReviews](https://github.com/carlosdg/RestaurantsReviews). There you can find in a single repository the code for the RestaurantsReviews web application and the data API server. They are also the most up to date versions of my project.
+
 This is the project made for [Udacity's Mobile Web Specialist nanodegree](https://www.udacity.com/course/mobile-web-specialist-nanodegree--nd024). This project was divided into three stages, you can see the ending result of each stage in the corresponding branches:
 
 - [stage-1](https://github.com/carlosdg/mws-restaurant-stage-1/tree/stage-1)
