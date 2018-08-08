@@ -1,33 +1,79 @@
-# Mobile Web Specialist Certification Course
----
-#### _Three Stage Course Material Project - Restaurant Reviews_
+# Restaurant Reviews (Mobile Web Specialist Certification Course)
 
-## Project Overview: Stage 1
+This is the project made for [Udacity's Mobile Web Specialist nanodegree](https://www.udacity.com/course/mobile-web-specialist-nanodegree--nd024). This project was divided into three stages, you can see the ending result of each stage in the corresponding branches:
 
-For the **Restaurant Reviews** projects, you will incrementally convert a static webpage to a mobile-ready web application. In **Stage One**, you will take a static design that lacks accessibility and convert the design to be responsive on different sized displays and accessible for screen reader use. You will also add a service worker to begin the process of creating a seamless offline experience for your users.
+- [stage-1](https://github.com/carlosdg/mws-restaurant-stage-1/tree/stage-1)
+- [stage-2](https://github.com/carlosdg/mws-restaurant-stage-1/tree/stage-2)
+- [stage-3](https://github.com/carlosdg/mws-restaurant-stage-1/tree/stage-3)
 
-### Specification
+The main purpose of this project is to learn/improve the skills at:
 
-You have been provided the code for a restaurant reviews website. The code has a lot of issues. It’s barely usable on a desktop browser, much less a mobile device. It also doesn’t include any standard accessibility features, and it doesn’t work offline at all. Your job is to update the code to resolve these issues while still maintaining the included functionality. 
+- Building Offline Capable Web Applications
+- Building Performant Web Applications
+- Building Accessible and Responsive Web Applications
 
-### What do I do from here?
+After finishing the course, I've refactor parts of the code and I've used this project to practise with other technologies like [webpack](https://webpack.js.org/) and [docker](https://www.docker.com/)
 
-1. In this folder, start up a simple HTTP server to serve up the site files on your local computer. Python has some simple tools to do this, and you don't even need to know Python. For most people, it's already installed on your computer. 
+## About Restaurants Reviews
 
-In a terminal, check the version of Python you have: `python -V`. If you have Python 2.x, spin up the server with `python -m SimpleHTTPServer 8000` (or some other port, if port 8000 is already in use.) For Python 3.x, you can use `python3 -m http.server 8000`. If you don't have Python installed, navigate to Python's [website](https://www.python.org/) to download and install the software.
+This is an application about restaurants, users can:
 
-2. With your server running, visit the site: `http://localhost:8000`, and look around for a bit to see what the current experience looks like.
-3. Explore the provided code, and start making a plan to implement the required features in three areas: responsive design, accessibility and offline use.
-4. Write code to implement the updates to get this site on its way to being a mobile-ready website.
+- See information of restaurants
+  - Weekly schedule
+  - Location
+  - Cuisine type
 
-## Leaflet.js and Mapbox:
+- Mark restaurants as favorite
 
-This repository uses [leafletjs](https://leafletjs.com/) with [Mapbox](https://www.mapbox.com/). You need to replace `<your MAPBOX API KEY HERE>` with a token from [Mapbox](https://www.mapbox.com/). Mapbox is free to use, and does not require any payment information. 
+- Search restaurants filtered by neighborhood and/or cuisine type
 
-### Note about ES6
+- Post reviews of a restaurant
 
-Most of the code in this project has been written to the ES6 JavaScript specification for compatibility with modern web browsers and future proofing JavaScript code. As much as possible, try to maintain use of ES6 in any additional JavaScript you write. 
+- See other users reviews of a restaurant
 
-### Note about `js/jake_archibald_idb.js`
+All the restaurants and reviews data is retrieved from an external database via a [REST API](https://en.wikipedia.org/wiki/Representational_state_transfer). This data is stored on [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) so users can access the application with some content while being offline. Also, the waiting time for the application to load after the first load is very small because we first load the cached content and then update the application if the user is online.
 
-[This script](js/jake_archibald_idb.js) is from the [idb repository of Jake Archibald](https://github.com/jakearchibald/idb). It is used to access the IndexedDB with promises
+Users can send reviews and favorite restaurants while being offline, once they are online the requests will be sent to the remote database even if they leave the application, in this last case the data will be sent only when the users come back to the application
+
+## Run
+
+First download the code from github
+
+```
+git clone https://github.com/carlosdg/mws-restaurant-stage-1 && cd mws-restaurant-stage-1
+```
+
+Now you have to create a `.env` file to store some environment variables needed for the application. The file should be like the following:
+
+```bash
+# MODE specifies whether webpack should build the public folder for production or development
+# Values are "production" or "development" (without quotes)
+MODE=development
+
+# REMOTE_DB_BASE_URL specifies what is the base URL of the remote database server
+# This is from where the application will try to fetch the restaurant and reviews data
+# It has to include the URL scheme, host and port (if the port is different than the
+# default one for the protocol)
+REMOTE_DB_BASE_URL=http://localhost:1337
+
+# MAPBOX_API_KEY specifies the API key for mapbox
+MAPBOX_API_KEY=api_key
+```
+
+Install the app dependencies and generate the `public` folder
+
+```
+npm install && npm run build
+```
+
+Now you can start a server listening on port 8080 with
+
+```
+npm start
+```
+
+## Authors
+
+- Carlos Domínguez García
+
+**Note**: this project was started off from the [Udacity's mws-restaurant-stage-1 repository](https://github.com/udacity/mws-restaurant-stage-1). They created that repository as a starting point for the nanodegree project.
