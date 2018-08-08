@@ -1,4 +1,5 @@
 const path = require("path");
+const webpack = require('webpack');
 
 const publicFolderPath = path.resolve(__dirname, "./public");
 
@@ -12,5 +13,10 @@ module.exports = {
   output: {
     filename: "[name].js",
     path: publicFolderPath
-  }
+  },
+  plugins: [
+    // Allows us to use in the browser the values of the 
+    // environment variables specified
+    new webpack.EnvironmentPlugin(['REMOTE_DB_BASE_URL'])
+  ]
 };
