@@ -1,6 +1,6 @@
 const path = require("path");
 
-const distFolderPath = path.resolve(__dirname, "./dist");
+const publicFolderPath = path.resolve(__dirname, "./public");
 
 module.exports = {
   mode: process.env.MODE || "development",
@@ -11,6 +11,6 @@ module.exports = {
   },
   output: {
     filename: "[name].js",
-    path: distFolderPath
+    path: publicFolderPath
   }
 };

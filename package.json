@@ -4,9 +4,9 @@
   "description": "Udacity Mobile Web Nanodegree Project",
   "main": "src/index.html",
   "scripts": {
-    "start": "http-server dist",
+    "start": "http-server public",
     "dev": "gulp",
-    "build": "gulp dist"
+    "build": "gulp public"
   },
   "repository": {
     "type": "git",

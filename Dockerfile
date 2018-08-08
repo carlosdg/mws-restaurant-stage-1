@@ -1,5 +1,5 @@
 ### Dockerfile to generate a image that builds the application
-### (i.e. generates the "dist" folder)
+### (i.e. generates the "public" folder)
 ### Whether it is for a production or development environment should
 ### be specified via the MODE environment variable
 

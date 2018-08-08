@@ -5,6 +5,7 @@ services:
     image: "mws-builder"
     environment: 
       MODE: "development"
+      REMOTE_DB_BASE_URL: "http://localhost:1337"
     ports:
       - "3000:3000"
     volumes:
