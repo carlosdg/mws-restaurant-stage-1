@@ -42,8 +42,7 @@ function initMap() {
   L.tileLayer(
     "https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.jpg70?access_token={accessToken}",
     {
-      accessToken:
-        "pk.eyJ1IjoiY2FybG9zLWRvbWluZ3VleiIsImEiOiJjampvOWE0ZnIxNnd3M3Zyc3pxM2ZnNHJkIn0.y4purOXmeN0qCA2vW4etCg",
+      accessToken: process.env.MAPBOX_API_KEY || '',
       maxZoom: 18,
       attribution:
         'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +

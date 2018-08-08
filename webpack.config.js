@@ -1,6 +1,10 @@
 const path = require("path");
 const webpack = require('webpack');
 
+// Look at .env and add those environment variables
+// to process.env
+require('dotenv').config();
+
 const publicFolderPath = path.resolve(__dirname, "./public");
 
 module.exports = {
@@ -17,6 +21,6 @@ module.exports = {
   plugins: [
     // Allows us to use in the browser the values of the 
     // environment variables specified
-    new webpack.EnvironmentPlugin(['REMOTE_DB_BASE_URL'])
+    new webpack.EnvironmentPlugin(['REMOTE_DB_BASE_URL', 'MAPBOX_API_KEY'])
   ]
 };
